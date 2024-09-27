@@ -19,5 +19,9 @@ This folder contains MATLAB scripts for importing and plotting log data.
 ### 2. Sample_Flight_Data
 This folder contains example log files from flight tests. These files can be imported into MATLAB using the scripts in the `_LOGS_PLOTTER` folder for visualization and analysis.
 
+- **Sample_Flight_Data/2024/06/20240613/PID** contains flight data collected using the PID control algorithm.
+
+- **Sample_Flight_Data/2024/07/20240720/MRAC** contains flight data collected using the MRAC control algorithm.
+
 ---
 
