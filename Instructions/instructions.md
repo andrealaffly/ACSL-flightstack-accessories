@@ -1574,7 +1574,7 @@ The parameters of the function `publish_vehicle_command` (Line 156) `param1 = 1`
 ```
 
 #### Figure 12
-![MAV_CMD_DO_SET_MODE](images/MAV_CMD_DO_SET_MODE.png)
+![MAV_CMD_DO_SET_MODE](images/MAV_CMD_DO_SET_MODE.PNG)
 
 *[Figure 12](#figure-12): MAV_CMD_DO_SET_MODE*
 
