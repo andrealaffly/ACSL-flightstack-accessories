@@ -26,19 +26,52 @@
    3.13 [Creating a system rule for the pixhawk](#313-creating-a-system-rule-for-the-pixhawk)  
    3.14 [Deleting unnecessary packages](#314-deleting-unnecessary-packages)
 
-4. [Commands for debugging in MAVLink Shell-QGroundControl](#4-commands-for-debugging-in-mavlink-shell-qgroundcontrol)
+4. [Setting up the ODroid M1S as a server with ROS2 Humble](#4-setting-up-the-odroid-m1s-as-server-with-ros2-humble)  
+    4.1 [Check the timezone](#41-check-the-timezone)  
+    4.2 [Update the ODroid](#42-update-the-odroid)  
+    4.3 [Install git and nano](#43-install-git-and-nano)  
+    4.4 [Install "libasio-dev" Package](#44-install-libasio-dev-package)  
+    4.5 [Install "lsusb" Package](#45-install-lsusb-package)  
+    4.6 [Setting the RTC clock](#46-setting-the-rtc-clock)  
+    4.7 [Check For USB communication](#47-check-for-usb-communication)  
+    4.8 [Install latest CMake Package](#48-install-latest-cmake-package)  
+    4.9 [Setting up the Access Point](#49-setting-up-the-access-point)  
+    4.10 [Installing ROS2 Humble](#410-installing-ros2humble)  
+    4.11 [Install μXRCE-DDS](#411-install-μxrce-dds)  
+    4.12 [Install python3 packages](#412-install-python3-packages)  
+    4.13 [Compile boost from source](#413-compile-boost-from-source)  
 
-5. [Create your own ROS2 package on Odroid](#5-create-your-own-ros2-package-on-odroid)  
-   5.1 [Create the workspace](#51-create-the-workspace)  
-   5.2 [Create the package](#52-create-the-package)  
-   5.3 [Example: thrust_stand package for directly controlling motors](#53-example-thrust_stand-package-for-directly-controlling-motors)  
-   &nbsp;&nbsp;&nbsp;&nbsp;5.3.1 [Directories structure](#531-directories-structure)  
-   &nbsp;&nbsp;&nbsp;&nbsp;5.3.2 [control_motors.cpp](#532-control_motorscpp)  
-   &nbsp;&nbsp;&nbsp;&nbsp;5.3.3 [package.xml](#533-packagexml)  
-   &nbsp;&nbsp;&nbsp;&nbsp;5.3.4 [CMakeLists.txt](#534-cmakeliststxt)
+5. [Commands for debugging in MAVLink Shell-QGroundControl](#5-commands-for-debugging-in-mavlink-shell-qgroundcontrol)
 
-6. [Flightstack - Mattia](#6-flightstack---mattia)  
-   6.1 [Running the Flightstack with Real-Time priority](#61-running-the-flightstack-with-real-time-priority)
+6. [Installing ROS2 Galactic on Odroid](#6-installing-ros2-galactic-on-odroid)
+
+7. [Setting up intel NUC with ROS2 Humble](#7-setting-up-intel-nuc-with-ros2-humble)  
+    7.1 [Setting up Kernel](#71-setting-up-kernel)  
+    7.2 [Install libasio](#72-install-libasio)  
+    7.3 [Install latest CMake Package](#73-install-latest-cmake-package)  
+    7.4 [Setting up the Access Point](#74-setting-up-the-access-point)  
+    7.5 [Installing Latest Boost Libraries](#75-installing-latest-boost-libraries)  
+    7.6 [Install ROS2 Humble Barebones](#76-install-ros2-humble-barbones)  
+    7.7 [Install librealsense sdk v2.53.1](#77-install-librealsense-sdk-v2531)
+
+8. [C++ wrapper for Python using Boost Libraries](#8-c-wrapper-for-python-using-boost-libraries)
+
+9. [Create your own ROS2 package on Odroid](#9-create-your-own-ros2-package-on-odroid)  
+   9.1 [Create the workspace](#91-create-the-workspace)  
+   9.2 [Create the package](#92-create-the-package)  
+   9.3 [Example: thrust_stand package for directly controlling motors](#93-example-thrust_stand-package-for-directly-controlling-motors)  
+   &nbsp;&nbsp;&nbsp;&nbsp;9.3.1 [Directories structure](#931-directories-structure)  
+   &nbsp;&nbsp;&nbsp;&nbsp;9.3.2 [control_motors.cpp](#932-control_motorscpp)  
+   &nbsp;&nbsp;&nbsp;&nbsp;9.3.3 [package.xml](#933-packagexml)  
+   &nbsp;&nbsp;&nbsp;&nbsp;9.3.4 [CMakeLists.txt](#934-cmakeliststxt)
+
+10. [Flightstack](#10-flightstack)  
+   10.1 [Running the Flightstack with Real-Time priority](#101-running-the-flightstack-with-real-time-priority)
+
+11. [GPS Firmware Update](#11-gps-firmware-update)  
+    11.1 [Flash Ardupilot Firmware onto Pixhawk](#111-flash-ardupilot-firmware-onto-pixhawk)  
+    11.2 [Installing Ardupilot](#112-installing-ardupilot)  
+    
 
 
 
@@ -587,6 +620,13 @@ This will open up a file in nano. Scroll down all the way to the end and add the
 
 ## 3.8 Check For USB communication
 
+Install the USB drivers for communication with the following commands
+
+```bash
+    sudo apt-get update -y
+    sudo apt-get install usbutils -y
+```
+
 With the Wifi and the FTDI usb-uart module plugged in, run the following command:
 
 ```bash
@@ -937,20 +977,15 @@ in the file that we just opened called `/etc/udev/rules.d/99-pixhawk.rules`, fil
     SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", SYMLINK+="ttyPixhawk"
 ```
 
-\fbox{\begin{minipage}{\linewidth} 
-    \textbf{Note:} use \texttt{ctrl + o} to write the file and then \texttt{ctrl + x} to exit the file.
-\end{minipage}}\\
+> **Note:** use `ctrl + o` to write the file and then `ctrl + x` to exit the file.
 
-Be sure to add yourself in the \texttt{tty} and \texttt{dialout} groups via \texttt{usermod} to avoid having to execute scripts as root.
+
+Be sure to add yourself in the `tty` and `dialout` groups via `usermod` to avoid having to execute scripts as root.
 
 ```bash
     sudo usermod -a -G tty odroid
     sudo usermod -a -G dialout odroid
 ```
-
-\fbox{\begin{minipage}{\linewidth} 
-    **Note:** You can reboot by typing in `sudo reboot` in the terminal window.
-\end{minipage}}
 
 > **Note**:You can reboot by typing in `sudo reboot` in the terminal window.
 
@@ -1047,7 +1082,652 @@ If `plugdev` is not listed and you need to add your user to the `plugdev` group,
 
 This should solve the issue, and you should be able now to access USB pen-drives.
 
-# 4 Commands for debugging in MAVLink Shell-QGroundControl
+# 4 Setting up the ODroid M1S as a server with ROS2 Humble
+
+When you plug the ODroid M1s to power and connect it to a monitor and keyboard for the first time, you will be greeted with the following screen as shown in [Figure 11](#figure-11). Pick option `3` which is the server option and let it run through the setup
+
+#### Figure 11
+![Checking uXRCE-DDS client status](images/ODROID-M1S-Select-OS-to-install-720x402.jpg)
+
+*[Figure 11](#figure-11): Checking uXRCE-DDS client status*
+
+Be sure to add yourself in the `tty` and `dialout` groups via `usermod` to avoid having to execute scripts as root.
+
+```bash
+    sudo usermod -a -G tty odroid
+    sudo usermod -a -G dialout odroid
+```
+
+## 4.1 Check the timezone
+
+Plug in the Ethernet and check the time zone by typing in
+
+``` bash
+    date
+```
+
+If the timezone is not what you expect it to be, type in the following
+
+```bash
+    sudo dpkg-reconfigure tzdata
+```
+
+A dialogue box will pop up with the various countries and time zones. Use the arrow keys to navigate and the Enter key to select, then verify that the time zone is set correctly with the `date` command.
+
+## 4.2 Update the ODroid
+
+```bash
+    sudo apt-get -y update
+    sudo apt-get -y upgrade
+```
+
+ Enter the password `odroid` when prompted.
+
+ ## 4.3 Install git and nano
+
+Run the following code to install nano and git
+
+```bash
+    sudo apt-get -y install git nano
+```
+## 4.4 Install ""libasio-dev" Package
+
+This package is needed for the UDP communication for VICON.
+
+```bash
+    sudo apt-get update -y
+    sudo apt-get install -y libasio-dev
+```
+
+## 4.5 Install ""lsusb" Package
+
+This package is needed for USB interfaces like our ftdio USB device
+
+```bash
+    sudo apt-get install usbutils
+```
+
+## 4.6 Setting the RTC clock 
+
+
+1. Now that the time is set to NYC time in the previous steps (or your desired time zone). reboot the system by either typing \texttt{sudo reboot} in the terminal.
+
+2. Now install the RTC battery at the back of the board. The RTC battery plug is keyed and, therefore, can only be installed one way. Please be careful while performing the installation, as the RTC plug is fragile. Once you have installed the battery, use the double-sided tape provided at the back of the battery to stick it to the back of the board. Please be sure to find a space that is not occupied by traces on the PCB or other components and avoid the rectangular space already allocated for PCIE slot.
+
+3.  Once that is done, the RTC circuit should be running. Run the following command in the terminal, 
+`
+    sudo hwclock -w -f /dev/rtc0
+`
+
+    This should write our system time to the rtc clock. Once that is done. Now we want to run the following command to switch off the autosyning of time to the server, `sudo timedatectl set-ntp false`
+
+
+4. Now run the following in the terminal to check if your time and the rtc time are sync'd.
+`sudo hwclock -r; date`
+Check if the date and time on the first line matches the second line of the output.
+
+5. The final step is to write some code that makes the system time sync to the time of the RTC clock upon boot and not the internet. Run the following code in the terminal. `sudo nano /etc/rc.local`
+This will open up a file in nano. Scroll down all the way to the end and add the following before the `exit 0` line.
+    ```bash
+        if [ -f /aafirstboot ]; then /aafirstboot start ; fi
+
+        hwclock -s -f /dev/rtc0
+
+        exit 0    ← *already there*
+    ```
+    Now press `ctrl+o` to save the changes, then `ctrl+x` to exit the file.
+
+6. You can reboot the system by typing in `sudo reboot`.
+
+7. Your RTC should now be configured. You can remove the ethernet cable and boot after 5 minutes to check if the time is right just for sanity check.
+
+## 4.7 Check for USB communication
+
+With the Wifi and the FTDI usb-uart module plugged in, run the following command:
+
+```bash
+    lsusb
+```
+
+This should display the USB devices that are connected to the ODroid M1S. Make sure a "Realtek" wifi module device is present and a "FTDI" serial device are present. Next check if serial communication is ok (/dev/ttyUSB0 is present) by running: 
+
+```bash
+    ls -al /dev/ttyUSB*
+```
+
+This should list some "/dev/ttyUSB0" or "/dev/ACM0" to be node to be present (usually the serial devices have the identifier 0 at the end). If not. Then check if the modules "usbserial" and "ftdi_sio" are there by running: 
+
+```bash
+    lsmod
+```
+
+If they are not there, do the following:
+
+```bash
+    cd /etc/modules-load.d/
+    sudo nano modules.conf
+```
+
+Add the following line to the file and then save and exit
+
+```bash
+    usbserial
+```
+
+Create an additional file:
+```bash
+    sudo nano ftdi_sio.conf
+```
+
+Add the following line to the file and then save and exit
+
+```bash
+    ftdi_sio
+```
+
+Now the modules should automatically load at each reboot. Now reboot
+
+```bash
+    sudo reboot
+```
+
+and once you login, go to a terminal and run 
+
+```bash
+    lsmod
+```
+
+to make sure the "usbserial" and "ftdi_sio" modules are present.
+
+## 4.8 Install latest CMake Package
+
+Prepare for installation
+
+```bash
+    sudo apt update && \
+    sudo apt install -y software-properties-common lsb-release && \
+    sudo apt clean all
+```
+
+Obtain a copy of kitware's signing key.
+
+```bash
+    wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
+```
+
+Add kitware's repository to your sources list for Ubuntu
+
+```bash
+    sudo add-apt-repository "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main"
+```
+
+As an optional step, is recommended that we also install the kitware-archive-keyring package to ensure that Kitware's keyring stays up to date as they rotate their keys.
+
+```bash
+    sudo apt update
+    sudo apt install kitware-archive-keyring
+    sudo rm /etc/apt/trusted.gpg.d/kitware.gpg
+    sudo apt-get update
+```
+
+If running "sudo apt-get update" gets the following error:
+
+```bash
+Err:7 https://apt.kitware.com/ubuntu bionic InRelease
+    The following signatures couldnt be verified because the public key is not available: NO_PUBKEY "{KEY}"
+    Fetched 11.0 kB in 1s (7552 B/s)
+```
+
+Copy the public key - "{KEY}" for example 6AF7F09730B3F0A4 and run this command (make sure to replace the example key with the key that is shown for you):
+
+```bash
+    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 6AF7F09730B3F0A4
+```
+
+Finally we can update and install the cmake package.
+
+```bash
+    sudo apt update
+    sudo apt install cmake
+```
+
+After installation check if the latest version is installed
+
+```bash
+    cmake --version
+```
+
+Make sure the version is at least more than version "3.20".
+
+ ## 4.9 Setting up the Access Point
+
+In the previous installation with GUI Desktop, we used a GUI tool to set up our access point, here we will do it a bit differently. The package which is built on the old `create_ap` repository by oblique (but is up to date) works with our 5BK wifi module from Hardkernel. First, we install some dependencies:
+
+```bash
+    sudo apt install -y libgtk-3-dev build-essential gcc g++ pkg-config make hostapd libqrencode-dev libpng-dev wireless-tools
+```
+Install the dependencies for the wifi drivers
+
+```bash
+    sudo apt install iw dnsmasq iptables -y
+```
+
+Now navigate to the home folder and use the following commands to clone and install the package
+
+```bash
+    cd
+    git clone https://github.com/lakinduakash/linux-wifi-hotspot
+    cd linux-wifi-hotspot/src/scripts
+```
+
+Now, we need to modify the settings of the `create_ap.conf` to put in our wifi name and password before installation. Navigate to the folder using,
+
+```bash
+    cd linux-wifi-hotspot/src/scripts/
+    nano create_ap.conf
+```
+
+and modify the following as you please
+
+```bash
+    SSID=MyAccessPoint
+    PASSPHRASE=12345678
+```
+
+to the following
+
+```bash
+    SSID=sqrbp_ap
+    PASSPHRASE=sqrbp_ap
+```
+
+> **Note**: Choose your SSID and Password as you please. We recommend using `NameOfPlatform_ap`. For example, I have the ODroid M1S connected to the small Quad-Rotor-Biplane platform and have thus picked the SSID `sqrbp_ap`. We also strongly recommend setting the password as the same as the SSID.
+
+Type in the following to set ourselves up for wifi.
+
+```bash
+    sudo apt-get install linux-headers-$(uname -r)$
+```
+
+this installs the headers for our wifi module. After the installation, reboot using `sudo reboot now` and create a service for running our wifi adapter as `wlan0`.
+
+```bash
+    sudo nano /etc/systemd/system/wlan0.service
+```
+
+Add the following content:
+
+```bash
+    [Unit]
+    Description=Bring up wlan0 interface
+    Wants=network.target
+    Before=network.target
+    
+    [Service]
+    Type=oneshot
+    ExecStart=/sbin/ifconfig wlan0 up
+    RemainAfterExit=yes
+    
+    [Install]
+    WantedBy=multi-user.target    
+```
+
+Save and close the file using `ctrl + o` and `ctrl + x`. Enable the service to start at boot:
+
+```bash
+    sudo systemctl enable wlan0.service
+```
+
+Verify that the `wlan0` is showing up
+
+```bash
+    sudo iwconfig
+```
+
+and turn on the `wlan0`
+
+```bash
+    sudo ifconfig wlan0 up
+```
+
+reboot using `sudo reboot now` and make sure our `wlan0` connection is up, type
+
+```bash
+    ifconfig
+```
+
+and see if the `wlan0` shows up. You can now proceed to install using,
+
+```bash
+    sudo make install-cli-only
+```
+
+Now create the `WPA + WPA2 passphrase` for your access point by typing in the following
+
+```bash
+    sudo create_ap --no-virt wlan0 eth0 sqrbp_ap sqrbp_ap
+```
+
+Now to enable the accesspoint on startup type in,
+
+```bash
+    sudo systemctl enable create_ap
+```
+
+Reboot the system and check if you can find your access point and are able to ssh in. Type in your ground station computer:
+
+```bash
+    ssh odroid@192.168.12.1
+```
+
+By default, the gateway is `192.168.12.1`. The default password is: `odroid`.
+
+> **Note**: While SSH-ing into the ODroid from the groundstation, you might run into some error that say that the MAC or KEY is not recognized. If you are on windows go to `C:\Users\<username>\.ssh`, open `known_hosts` using notepad, delete all the contents in the file and save it. Now try SSH-ing back and you can. On Ubuntu, run the command that shows up on the terminal.
+
+
+## 4.10 Installing ROS2Humble
+
+Make sure you have a locale which supports UTF-8. If you are in a minimal environment (such as a docker container), the locale may be something minimal like POSIX. We test with the following settings. However, it should be fine if you’re using a different UTF-8 supported locale.
+
+```bash
+    locale  # check for UTF-8
+
+    sudo apt update && sudo apt install locales
+    sudo locale-gen en_US en_US.UTF-8
+    sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+    export LANG=en_US.UTF-8
+    
+    locale  # verify settings
+```
+
+You will need to add the ROS 2 apt repository to your system. First, ensure that the Ubuntu Universe repository is enabled.
+
+```bash
+    sudo apt install software-properties-common
+    sudo add-apt-repository universe
+```
+
+Now add the ROS 2 GPG key with apt.
+
+```bash
+    sudo apt update && sudo apt install curl -y
+    sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+```
+
+Then, add the repository to your sources list.
+
+```bash
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+```
+
+Install common packages.
+
+```bash
+    sudo apt update && sudo apt install -y \
+      python3-flake8-docstrings \
+      python3-pip \
+      python3-pytest-cov \
+      ros-dev-tools
+```
+
+Install packages according to your Ubuntu version. (We use Ubuntu 20.04, therefore the code below installs the necessary packages for this particular OS version)
+
+```bash
+    python3 -m pip install -U \
+       flake8-blind-except \
+       flake8-builtins \
+       flake8-class-newline \
+       flake8-comprehensions \
+       flake8-deprecated \
+       flake8-import-order \
+       flake8-quotes \
+       "pytest>=5.3" \
+       pytest-repeat \
+       pytest-rerunfailures
+```
+
+Create a workspace and clone all repos:
+
+```bash
+    mkdir -p ~/ros2_humble/src
+    cd ~/ros2_humble
+    vcs import --input https://raw.githubusercontent.com/ros2/ros2/humble/ros2.repos src
+```
+
+ROS 2 packages are built on frequently updated Ubuntu systems. It is always recommended that you ensure your system is up to date before installing new packages.
+
+```bash
+    sudo apt upgrade
+    sudo rosdep init
+    rosdep update
+    rosdep install --from-paths src --ignore-src -y --skip-keys "fastcdr rti-connext-dds-6.0.1 urdfdom_headers"
+```
+
+> **Note**:  If you’re using a distribution that is based on Ubuntu (like Linux Mint) but does not identify itself as such, you’ll get an error message like `Unsupported OS [mint]`. In this case, append `--os=ubuntu:jammy` to the above command.
+
+Now before we build, we need to minimze the number of packages we are building, we don't need `rqt`, `rviz` and a few of the examples associated with them as this will be on the drone. Create a script in the root folder by doing the following.
+
+```bash
+    cd 
+    touch minimize_ros2_packages.sh
+    nano minimize_ros2_packages.sh
+```
+
+then input the following into the script
+
+```bash
+    #!/bin/bash
+
+    # ANSI color codes
+    GREEN='\033[0;32m'
+    RED='\033[0;31m'
+    CYAN='\033[0;36m'
+    ORANGE='\033[0;33m'
+    NC='\033[0m' # No Color
+    
+    # Define the root directory of your ROS 2 workspace
+    ROS2_DIR="/home/odroid/ros2_humble"
+    
+    # Array of exact directories to create COLCON_IGNORE in
+    DIRECTORIES=(
+        "$ROS2_DIR/src/ros2/rviz/rviz_assimp_vendor"
+        "$ROS2_DIR/src/ros2/rviz/rviz_default_plugins"
+        "$ROS2_DIR/src/ros2/rviz/rviz_rendering"
+        "$ROS2_DIR/src/ros2/rviz/rviz_visual_testing_framework"
+        "$ROS2_DIR/src/ros2/rviz/rviz2"
+        "$ROS2_DIR/src/ros2/rviz/rviz_common"
+        "$ROS2_DIR/src/ros2/rviz/rviz_ogre_vendor"
+        "$ROS2_DIR/src/ros2/rviz/rviz_rendering_tests"
+        "$ROS2_DIR/src/ros2/demos/action_tutorials"
+        "$ROS2_DIR/src/ros2/demos/demo_nodes_cpp_native"
+        "$ROS2_DIR/src/ros2/demos/intra_process_demo"
+        "$ROS2_DIR/src/ros2/demos/logging_demo"
+        "$ROS2_DIR/src/ros2/demos/quality_of_service_demo"
+        "$ROS2_DIR/src/ros2/demos/composition"
+        "$ROS2_DIR/src/ros2/demos/pendulum_control"
+        "$ROS2_DIR/src/ros2/demos/topic_monitor"
+        "$ROS2_DIR/src/ros2/demos/dummy_robot"
+        "$ROS2_DIR/src/ros2/demos/pendulum_msgs"
+        "$ROS2_DIR/src/ros2/demos/lifecycle"
+        "$ROS2_DIR/src/ros2/demos/topic_statistics_demo"
+        "$ROS2_DIR/src/ros2/demos/image_tools"
+        "$ROS2_DIR/src/ros2/demos/lifecycle_py"
+        "$ROS2_DIR/src/ros-visualization/interactive_markers"
+        "$ROS2_DIR/src/ros-visualization/qt_gui_core"
+        "$ROS2_DIR/src/ros-visualization/rqt_action"
+        "$ROS2_DIR/src/ros-visualization/rqt_console"
+        "$ROS2_DIR/src/ros-visualization/rqt_msg"
+        "$ROS2_DIR/src/ros-visualization/rqt_publisher"
+        "$ROS2_DIR/src/ros-visualization/rqt_reconfigure"
+        "$ROS2_DIR/src/ros-visualization/rqt_shell"
+        "$ROS2_DIR/src/ros-visualization/rqt_topic"
+        "$ROS2_DIR/src/ros-visualization/python_qt_binding"
+        "$ROS2_DIR/src/ros-visualization/rqt"
+        "$ROS2_DIR/src/ros-visualization/rqt_bag"
+        "$ROS2_DIR/src/ros-visualization/rqt_graph"
+        "$ROS2_DIR/src/ros-visualization/rqt_plot"
+        "$ROS2_DIR/src/ros-visualization/rqt_py_console"
+        "$ROS2_DIR/src/ros-visualization/rqt_service_caller"
+        "$ROS2_DIR/src/ros-visualization/rqt_srv"
+        "$ROS2_DIR/src/ros-visualization/tango_icons_vendor"
+        # Add more directories here as needed
+    )
+    
+    # Function to ensure COLCON_IGNORE files exist and display messages
+    ensure_colcon_ignore() {
+        local dir="$1"
+        local ignore_file="$dir/COLCON_IGNORE"
+    
+        # Check if COLCON_IGNORE file exists
+        if [ -f "$ignore_file" ]; then
+            echo -e "${CYAN}COLCON_IGNORE already exists in ${dir}"
+        else
+            echo -e "${ORANGE}Creating COLCON_IGNORE in ${dir}"
+            touch "$ignore_file"
+        fi
+    }
+    
+    # Function to count existing COLCON_IGNORE files
+    count_colcon_ignores() {
+        local count=0
+    
+        # Loop through each directory in DIRECTORIES array
+        for dir in "${DIRECTORIES[@]}"; do
+            local ignore_file="$dir/COLCON_IGNORE"
+            if [ -f "$ignore_file" ]; then
+                ((count++))
+            fi
+        done
+    
+        echo "$count"
+    }
+    
+    # Main script logic
+    # Loop through each directory in DIRECTORIES array and ensure COLCON_IGNORE
+    for dir in "${DIRECTORIES[@]}"; do
+        ensure_colcon_ignore "$dir"
+    done
+    
+    # Count existing COLCON_IGNORE files
+    num_colcon_ignores=$(count_colcon_ignores)
+    num_directories=${#DIRECTORIES[@]}
+    
+    # Compare counts and output result
+    if [ "$num_colcon_ignores" -ge "$num_directories" ]; then
+        echo -e "${GREEN}${num_colcon_ignores} COLCON_IGNORE files present for ${num_directories} directories specified. Packages minimized for compilation.${NC}"
+    else
+        echo -e "${RED}Failed to minimize packages for compilation.${NC}"
+    fi
+    
+```
+
+save it with `ctrl + o` and exit with `ctrl + x`. Make it executable by running
+
+```bash
+    chmod +x minimize_ros2_packages.sh
+```
+
+and run it with 
+
+```bash
+    ./minimze_ros2_packages.sh
+```
+
+If successful, the output should look something like this
+
+```bash
+    Creating COLCON_IGNORE in /home/odroid/ros2_humble/src/ros2/rviz/rviz_assimp_vendor
+    .
+    .
+    .
+    .
+    Creating COLCON_IGNORE in /home/odroid/ros2_humble/src/ros-visualization/rqt_srv
+    .
+    .
+    40 COLCON_IGNORE files present for 40 directories specified. Packages minimized for compilation.
+```
+
+This should tell the compiler to ignore the packages we don't want in the next step. We can now build the code in the workspace
+
+```bash
+    cd ~/ros2_humble/
+    colcon build --symlink-install
+```
+
+> **Note**:  if you are having trouble compiling all examples and this is preventing you from completing a successful build, you can use `COLCON_IGNORE` in the same manner as `CATKIN_IGNORE` to ignore the subtree or remove the folder from the workspace. Take for instance: you would like to avoid installing the large OpenCV library. Well, then simply run touch `COLCON_IGNORE` in the cam2image demo directory to leave it out of the build process.
+
+Now, we don’t want to have to source the setup file every time we open a new shell, we can add the command to out shell startup script, this makes it easier while we ssh in:
+
+```bash
+    echo "source ~/ros2_humble/install/local_setup.bash" >> ~/.bashrc
+```
+
+After running the above command, run this,
+
+```bash
+    printenv | grep ROS
+```
+
+you should get an output similar to this
+
+```bash
+    ROS_VERSION=2
+    ROS_PYTHON_VERSION=3
+    ROS_LOCALHOST_ONLY=0
+    ROS_DISTRO=humble    
+```
+
+Now, the bash shell will automatically source the packages for ROS2 Humble and we do not have to source it every time we try to do anything with ROS2 on the ODroid M1s. 
+
+## 4.11 Install μXRCE-DDS
+
+Run the following commands in a terminal window on the ODroid M1S:
+
+```bash
+    git clone https://github.com/eProsima/Micro-XRCE-DDS-Agent.git
+    cd Micro-XRCE-DDS-Agent
+    mkdir build
+    cd build
+    cmake ..
+    make -j4
+    sudo make install
+    sudo ldconfig /usr/local/lib/
+```
+
+> **Note**:  `make -j4` tells the compiler to run simultaneous processes in the background. We can do up to 4 with the ODroid M1S.Your mileage may vary when using a different board. Look up how many concurrent processes can be run based on the number of CPU cores for your board and proceed accordingly.
+
+Now that we have set up the companion computer side, we can move on to the Pixhawk setup and finally connecting the two and read/write data.
+
+## 4.12 Install python3 packages
+
+Run the following to setup some python packages.
+
+```bash
+    sudo apt-get install python3-testresources
+    sudo apt-get install python3-pip
+    pip install --user setuptools==58.2.0
+    pip install --user importlib_metadata empy==3.3.4 pyros-genmsg
+```
+## 4.13 Compile boost from source
+
+Run the following command to download and compile the latest version of boost
+
+```bash
+    git clone --recursive https://github.com/boostorg/boost.git
+    cd boost
+    ./bootstrap.sh
+    ./b2
+    sudo ./b2 install
+```
+
+Update the linker cache by running:
+
+```bash
+    sudo ldconfig
+```
+
+
+# 5 Commands for debugging in MAVLink Shell-QGroundControl
 
 After having run **on the Odroid** the following command for starting serial communication
 
@@ -1061,12 +1741,12 @@ you can check that the Pixhawk and Odroid are properly connected and exchanging 
     uxrce_dds_client status
 ```
 
-which should output something similar to what is shown in [Figure 11](#figure-11)
+which should output something similar to what is shown in [Figure 12](#figure-12)
 
-#### Figure 11
+#### Figure 12
 ![Checking uXRCE-DDS client status](images/uxrce_dds_client_status.png)
 
-*[Figure 11](#figure-11): Checking uXRCE-DDS client status*
+*[Figure 12](#figure-12): Checking uXRCE-DDS client status*
 
 To list all topics available you can run in the MAVLink Shell 
 
@@ -1086,9 +1766,505 @@ To listen to the content of one topic (in this case `sensor_accel`), run the lis
     listener sensor_accel
 ```
 
-# 5 Create your own ROS2 package on Odroid
 
-## 5.1 Create the workspace
+# 6 Installing ROS2 Galactic on Odroid
+
+We assume you already have ROS2 Foxy installed and want to also install ROS2 Galactic and have the ability to switch between them for tests. The first step is to comment out the sourcing of the packages in `.bashrc`.
+
+To do that 
+
+```bash
+    cd
+    sudo nano .bashrc
+```
+
+scroll down to where you put the sourcing code
+
+```bash
+    source /opt/ros/foxy/setup.bash
+```
+
+and comment it out.
+**Make sure you close the terminal** as we don't want ROS2 foxy packages to be sourced during the install of the new ROS2 version.
+
+Next we want to install ROS2 Galactic. 
+
+```bash
+    locale  # check for UTF-8
+
+    sudo apt update && sudo apt install locales
+    sudo locale-gen en_US en_US.UTF-8
+    sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+    export LANG=en_US.UTF-8
+    
+    locale  # verify settings
+```
+
+Setup the sources
+
+```bash
+    sudo apt install software-properties-common
+    sudo add-apt-repository universe
+```
+
+Now add the ROS 2 GPG key with apt.
+
+```bash
+    sudo apt update && sudo apt install curl
+    sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+```
+
+Then add the repository to your sources list.
+
+```bash
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+```
+
+Update your apt repository caches after setting up the repositories.
+
+```bash
+    sudo apt upgrade
+```
+
+ROS 2 packages are built on frequently updated Ubuntu systems. It is always recommended that you ensure your system is up to date before installing new packages.
+
+```bash
+    sudo apt upgrade
+```
+ROS-Base Install (Bare Bones): Communication libraries, message packages, command line tools. No GUI tools.
+
+```bash
+    sudo apt install ros-galactic-ros-base
+```
+
+**Install** Development tools: Compilers and other tools to build ROS packages
+
+```bash
+    sudo apt install ros-dev-tools
+```
+
+If you have installed the Desktop version you can check that your distro is installed properly with running some examples as shown in the previous sections, replace `foxy` with `galactic` while you source. If you have any errors, refer to the previous sections for some bug fixes.
+
+# 7 Setting up intel NUC with ROS2 Humble
+
+Install Ubuntu 22.04 with a bootable usb and perform a minimal install. Reboot, go to the Boot Options and set the time to your current time zone if it is not set yet.
+
+Update the packages. 
+
+```bash
+    sudo apt-get update -y && sudo apt-get upgrade -y
+```
+
+Install curl, wget and git
+
+```bash
+    sudo apt-get install curl wget git -y
+```
+
+## 7.1 Setting up Kernel
+
+Ubuntu 22.04 ships with kernel version 6.8 as of writing. We need to downgrade to kernel version 5.15 which is the last supported kernel version for the librealsense2 developer sdk.
+
+```bash
+    # Choose kernel version to install
+    kernel_version='5.15.0'
+    
+    # Install the old kernel
+    curl -sL https://raw.githubusercontent.com/pimlie/ubuntu-mainline-kernel.sh/master/ubuntu-mainline-kernel.sh | sudo bash -s -- -i "v$kernel_version"
+    
+    # Get the Grub entry name
+    # Note: Do verify the value of `grub_entry_name`. The following command gets
+    #       the oldest kernel version Grub entry name that is not a recovery mode.
+    # Example value: `Ubuntu, with Linux 6.5.0-45-generic`
+    grub_entry_name="$(grep -Po "menuentry '\KUbuntu, [^(']+" /boot/grub/grub.cfg | sort -V | head -1)"
+    
+    # Update `grub`
+    sed -i "s/^\s*GRUB_DEFAULT=.*$/GRUB_DEFAULT='Advanced options for Ubuntu>$grub_entry_name'/" /etc/default/grub
+    sudo update-grub
+    
+    # Disable the kernel package upgrade
+    sudo apt-mark hold $(dpkg --get-selections | grep -Po "^linux[^\t]+${grub_entry_name##* }")
+    
+    # Reboot system
+    reboot
+    
+    # Check the currently booted Linux kernel version
+    uname -r    
+```
+
+Now update the system repositories and upgrade again
+
+```bash
+    sudo apt-get update 
+    sudo apt-get upgrade
+```
+
+You might get an error stating something like the following:
+
+```bash
+    Reading package lists... Done
+    Building dependency tree... Done
+    Reading state information... Done
+    You might want to run 'apt --fix-broken install' to correct these.
+    The following packages have unmet dependencies:
+     linux-headers-5.15.0-051500-generic : Depends: libssl1.1 (>= 1.1.0) but it is not installable
+    E: Unmet dependencies. Try 'apt --fix-broken install' with no packages (or specify a solution).
+```
+
+This is because we have forced the system to never update the kernel. you can fix it by manually installing that dependancy
+
+```bash
+    wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_amd64.deb
+    sudo dpkg -i libssl1.1_1.1.0g-2ubuntu4_amd64.deb
+```
+
+## 7.2 Install libasio
+
+his package is needed for the UDP communication for VICON.
+
+```bash
+    sudo apt-get update -y
+    sudo apt-get install -y libasio-dev
+```
+
+## 7.3 Install latest CMake Package
+
+Prepare for installation
+
+```bash
+    sudo apt update && \
+    sudo apt install -y software-properties-common lsb-release && \
+    sudo apt clean all
+```
+
+Obtain a copy of kitware's signing key.
+
+```bash
+    wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
+```
+
+Add kitware's repository to your sources list for Ubuntu
+
+```bash
+    sudo add-apt-repository "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main"
+```
+
+As an optional step, is recommended that we also install the kitware-archive-keyring package to ensure that Kitware's keyring stays up to date as they rotate their keys.
+
+```bash
+    sudo apt update
+    sudo apt install kitware-archive-keyring
+    sudo rm /etc/apt/trusted.gpg.d/kitware.gpg
+    sudo apt-get update
+```
+
+If running `sudo apt-get update` gets the following error:
+
+```bash
+Err:7 https://apt.kitware.com/ubuntu bionic InRelease
+    The following signatures couldnt be verified because the public key is not available: NO_PUBKEY "{KEY}"
+    Fetched 11.0 kB in 1s (7552 B/s)
+```
+
+Copy the public key - "{KEY}" for example 6AF7F09730B3F0A4 and run this command (make sure to replace the example key with the key that is shown for you):
+
+```bash
+    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 6AF7F09730B3F0A4
+```
+
+Finally we can update and install the cmake package.
+
+```bash
+    sudo apt update
+    sudo apt install cmake
+```
+
+After installation check if the latest version is installed
+
+```bash
+    cmake --version
+```
+
+Make sure the version is at least more than version "3.20". 
+
+## 7.4 Setting up the Access Point
+
+The package to build the accesspoint is the same as the one in the ODroid setup instructions. We use the `Ralink Technology, Corp. RT5370 Wireless Adapter` and it is known to have the chipset to create a 2.4Ghz wifi accesspoint with the `create_ap` repository.
+
+First, we install some dependencies:
+
+```bash
+    sudo apt install -y libgtk-3-dev build-essential gcc g++ pkg-config make hostapd libqrencode-dev libpng-dev wireless-tools
+```
+
+Install the dependencies for the wifi drivers
+
+```bash
+    sudo apt install iw dnsmasq iptables -y
+```
+
+Now navigate to the home folder and use the following commands to clone and install the package
+
+```bash
+    cd
+    git clone https://github.com/lakinduakash/linux-wifi-hotspot
+    cd linux-wifi-hotspot
+
+    # building binaries
+    make
+
+    # install
+    sudo make install
+```
+
+Now you can launch the utility by typing the following in the terminal
+
+```bash
+    wihotspot
+```
+
+Now you will see a dialog box open as shown in [Figure 13](#figure-13).
+
+> **Note**:  Choose your SSID and Password as you please. We strongly recommend setting the password as the same as the SSID. You need to enable the gateway and set the ip to `192.168.12.1`. Disable the dns masq.
+While SSH-ing into the NUC from the groundstation, you might run into some error that say that the MAC or KEY is not recognized. If you are on windows go to `C:\Users\<username>.ssh`, open `known_hosts` using notepad, delete all the contents in the file and save it. Now try SSH-ing back and you can. On Ubuntu, run the command that shows up on the terminal.
+
+
+#### Figure 13
+![Settings for access point](images/nuc_ap.png)
+
+*[Figure 13](#figure-13): Settings for access point*
+
+Now to enable the accesspoint on startup type in,
+
+```bash
+    sudo systemctl enable create_ap
+```
+
+Now you have to make sure the firewall of the nuc is off and that we have started and setup the `ssh` sever.
+
+```bash
+    sudo ufw status 
+```
+
+The output should be `Status:inactive` by default. Next install the `net-tools` package and then the `ssh` package
+
+```bash
+    sudo apt-get install net-tools
+    sudo apt-get install ssh
+```
+
+Finally, start the ssh server of the nuc.
+
+```bash
+    sudo systemctl start ssh
+```
+
+Reboot the system and check if you can find your access point and are able to ssh in. Type in your ground station computer:
+
+```bash
+    ssh <name-you-see-in-the-terminal-in-the-nuc>@192.168.12.1
+```
+
+By default, the gateway is `192.168.12.1`, If you have changed it, enter that gateway ip. The default password is: `odroid`.
+
+## 7.5 Installing Latest Boost Libraries
+
+To install boost run the following
+
+```bash
+    # go to home folder
+    cd 
+
+    # clone the repository
+    git clone --recursive https://github.com/boostorg/boost.git
+
+    # start the binary script
+    ./bootstrap.sh
+
+    # run the binary compilation script
+    ./b2
+
+    # install the compiled binaries
+    sudo ./b2 install
+
+    # update the dynamic linker for the boost libraries
+    sudo ldconfig
+```
+
+## 7.6 Install ROS2 Humble Barbones
+
+Run the following to install ROS2 Humble Barebones version on the NUC. If you want to you could install the full desktop version and get the Rviz and Gazebo setups to visualize everything but for our purposes the barebones version is more than enough 
+
+```bash
+
+    # Setting up the locale
+    locale  # check for UTF-8
+
+    sudo apt update && sudo apt install locales
+    sudo locale-gen en_US en_US.UTF-8
+    sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+    export LANG=en_US.UTF-8
+    
+    locale  # verify settings
+
+    # Ensure that the Ubuntu Universe repository is enabled
+    sudo apt install software-properties-common
+    sudo add-apt-repository universe
+
+    # Now add the ROS 2 GPG key with apt
+    sudo apt update && sudo apt install curl -y
+    sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+
+    # Then add the repository to your sources list
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+
+    # Update and Upgrade
+    sudo apt-get update && sudo apt-get upgrade -y
+
+    # Install Barebones
+    sudo apt install ros-humble-ros-base
+
+    # Install development tools: Compilers and other tools to build ROS packages
+    sudo apt install ros-dev-tools
+
+    # Add the following to the .bashrc script for the terminal to source
+    # at startup as this is the only ros2 version we will use
+    nano ~/.basrc
+
+    # Add this to the end and save it 
+    source /opt/ros/humble/setup.bash
+    
+```
+
+## 7.7 Install librealsense sdk v2.53.1
+
+The scripts and commands below invoke `wget, git, add-apt-repository`. Make sure we have them installed if we haven't done so already in the previous sections.
+
+```bash
+    # update the repositories
+    sudo apt-get update
+
+    # install the packages
+    sudo apt-get install wget git software-properties-common
+
+```
+
+Before proceeding further make sure the system is upto date and that we are on the latest stable version of the 15.5 kernel (Done in [Section 7.1](#71-setting-up-kernel) ).
+
+
+```bash
+    # check the kernel version
+    uname -r
+```
+
+your output should look something like `5.15.0-051500-generic`, the first digit and the following two digits after the period are what matter. Now, make sure the system is upto date
+
+```bash
+    # update the repositories
+    sudo apt-get update
+
+    # upgrade the system
+    sudo apt-get upgrade -y
+```
+
+Type in the password if required. Now we need to clone the exact version of the firmware that supports both our T265 and the D435i cameras that we use at the lab.
+
+```bash
+    # go to the home directory
+    cd 
+
+    # download recursively the v2.53.1 branch 
+    git clone --branch v2.53.1 --recurse-submodules https://github.com/IntelRealSense/librealsense.git
+
+    # go to the librealsense directory
+    cd librealsense
+
+    # check if this is the right tag
+    git describe --tags
+```
+
+Now, we need to prepare the linux backend the the dev environment. Install the core packages requried to build *librealsense* binaries and the affected kernel modules:
+
+```bash
+    sudo apt-get install libssl-dev libusb-1.0-0-dev libudev-dev pkg-config libgtk-3-dev
+```
+
+Now install some distribution-specific packages:
+
+```bash
+    sudo apt-get install libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev at
+```
+
+Now, run the Intel Realsense permissions script from the root directory. **Make sure all the cameras are *disconnected* before proceeding**.
+
+```bash
+    # go to the root directory
+    cd ~/librealsense
+
+    # Run the permssions script
+    sudo ./scripts/setup_udev_rules.sh
+```
+
+> **Note**:  One can always remove permissions by running:
+        `sudo ./scripts/setup_udev_rules.sh --uninstall`
+
+Now build the binaries with cmake
+
+```bash
+    # go to librealsense root
+    cd ~/librealsense
+
+    # build and cd into build directory
+    mkdir build && cd build
+
+    # run cmake
+    cmake ../ -DFORCE_RSUSB_BACKEND=TRUE
+```
+
+Recompile and install *librealsense* binaries:
+
+```bash
+    sudo make uninstall && make clean && make -j8 && sudo make install
+```
+
+The shared object will be installed in `/usr/local/lib`, header files in `/usr/local/include`.
+The binary demos, tutorials and test files will be copied into `/usr/local/bin`.
+
+```bash
+    # Run the following command to refresh the object linker in linux
+    sudo ldconfig
+```
+
+# 8 C++ wrapper for Python using Boost Libraries
+
+After you have set everything up the normal way go to the directory where you cloned boost libraries
+
+```bash
+    # make sure python3 is installed but run the installation just in case
+    sudo apt install python3-dev
+
+    # install numpy and scipy
+    sudo pip3 install numpy scipy
+
+    # upgrade them to the latest version
+    sudo pip3 install --upgrade scipy numpy
+
+    # navigate to the boost library directory
+    cd ~/boost
+
+    # run the boost python installation script
+    ./bootsrap.sh --with-python
+    ./b2 --with-python
+
+    # finish installation
+    sudo ./b2 install
+    
+```
+
+
+# 9 Create your own ROS2 package on Odroid
+
+## 9.1 Create the workspace
 
 Before creating a package we need to create a ROS2 workspace. A workspace is a directory containing ROS 2 packages. Before using ROS 2, it’s necessary to source your ROS 2 installation workspace in the terminal you plan to work in. This makes ROS 2’s packages available for you to use in that terminal. The source command is:
 
@@ -1167,7 +2343,7 @@ In the root, source your overlay:
 > **Note**:  Sourcing the `local_setup` of the overlay will only add the packages available in the overlay to your environment. `setup` sources the overlay as well as the underlay it was created in, allowing you to utilize both workspaces.
 So, sourcing your main ROS 2 installation’s `setup` and then the `ros2_ws` overlay’s `local_setup`, like you just did, is the same as just sourcing `ros2_ws`’s `setup`, because that includes the environment of its underlay.
 
-## 5.2 Create the package
+## 9.2 Create the package
 
 A package is an organizational unit for your ROS 2 code. If you want to be able to install your code or share it with others, then you’ll need it organized in a package. With packages, you can release your ROS 2 work and allow others to build and use it easily.
 
@@ -1239,11 +2415,11 @@ To build only one of the packages (for example `my_package`) in your workspace i
     colcon build --packages-select my_package
 ```
 
-## 5.3 Example: `thrust_stand` package for directly controlling motors
+## 9.3 Example: `thrust_stand` package for directly controlling motors
 
 In this example, we explain the most meaningful sections of the `thrust_stand` package, which is required for running the motor tests and directly controlling the motors.
 
-### 5.3.1 Directories structure
+### 9.3.1 Directories structure
 
 The structure of the directories looks like the following:
 
@@ -1282,7 +2458,7 @@ ws_thrust_stand/
             package.xml
 ```
 
-### 5.3.2 `control_motors.cpp`
+### 9.3.2 `control_motors.cpp`
 Here is the code of `control_motors.cpp`, which creates a ROS2 node denominated "`offboard_control`".
 
 ```cpp
@@ -1573,10 +2749,10 @@ The parameters of the function `publish_vehicle_command` (Line 156) `param1 = 1`
     uint16 VEHICLE_CMD_DO_SET_MODE = 176			# Set system mode. |Mode, as defined by ENUM MAV_MODE| Empty| Empty| Empty| Empty| Empty| Empty|
 ```
 
-#### Figure 12
+#### Figure 14
 ![MAV_CMD_DO_SET_MODE](images/MAV_CMD_DO_SET_MODE.png)
 
-*[Figure 12](#figure-12): MAV_CMD_DO_SET_MODE*
+*[Figure 14](#figure-14): MAV_CMD_DO_SET_MODE*
 
 So: 
 - `param1` is set to 1 to enable the custom mode.
@@ -1653,7 +2829,7 @@ int main(int argc, char *argv[])
 }
 ```
 
-### 5.3.3 `package.xml`
+### 9.3.3 `package.xml`
 
 All *ament packages* must contain a single `package.xml` file at the root of the package regardless of their underlying build system. The `package.xml` "manifest” file contains information that is required in order to process and operate on a package. This package information includes things like the package’s name, which is globally unique, and the package’s dependencies. The `package.xml` file also serves as the marker file which indicates the location of the package on the file system.
 
@@ -1704,7 +2880,7 @@ Add a new line after the `ament_cmake` buildtool dependency and paste the follow
 Leave the rest as is and make sure to save the file.
 
 
-### 5.3.4 `CMakeLists.txt`
+### 9.3.4 `CMakeLists.txt`
 
 ```make
 cmake_minimum_required(VERSION 3.5)
@@ -1806,7 +2982,7 @@ ament_target_dependencies(control_motors px4_msgs rclcpp)
 
 Save the file and exit.
 
-# 6 FlightStack - Mattia
+# 10 FlightStack
 
 To manually clone repos in the `include` directory of the `flightstack` package:
 
@@ -1835,7 +3011,7 @@ After having cloned the `boost` library run the following commands:
 
 The previous manual procedure is not necessary anymore as the `flightstack` contains a `.gitmodules` file where all the submodules are already defined and will be automatically downloaded by adding the `--recurse-submodules` flag when cloning.
 
-## 6.1 Running the Flightstack with Real-Time priority
+## 10.1 Running the Flightstack with Real-Time priority
 To make the Flightstack run as fast as possible and prioritize it in the OS scheduler, you can follow these steps.
 
 Create a file in your root directory called `run_flightstack.sh`
@@ -1854,3 +3030,96 @@ Create a file in your root directory called `run_flightstack.sh`
     # Scheduling priority: 99
     echo "odroid" | sudo -S bash -c "source /opt/ros/foxy/setup.bash && source install/local_setup.bash && chrt -f 99 ros2 run flightstack flightstack"
 ```
+
+Before running this program, make it executable with the command:
+
+```bash
+    chmod +x ~/run_flightstack.sh 
+```
+
+Now, to execute the Flightstack, run the following command:
+
+```bash
+    ./run_flightstack.sh 
+```
+
+# 11 GPS Firmware Update
+
+## 11.1 Flash Ardupilot Firmware onto Pixhawk
+
+This section details the steps needed to update the firmware of the Here 3+ RTK GPS Module. This can **only** be done using Arducopter and not PX4-Autopilot. You will need a secondary Pixhawk board (Pixhawk 4 and up recommended as they have the necessary JST connectors to plug in your Here 3+ rover) to update the firmware on the GPS as you do not want the main Pixhawk (we use 6C) to get messed up.
+
+The first step is to load the ChibiOS run Ardupilot onto the pixhawk board. Please go to the following link and choose the folder with your Pixhawk board of choice. We choose `Pixhawk4`.
+
+[https://firmware.ardupilot.org/Copter/latest/](https://firmware.ardupilot.org/Copter/latest/)
+Download the `.apj` file as shown in [Figure 15](#figure-15).
+
+#### Figure 15
+![Ardupilot Firmware](images/ardupilot_firmware.jpg)
+
+*[Figure 15](#figure-15): Ardupilot Firmware*
+
+
+Navigate to the directory where you saved the ardupilot firmware and then open a terminal. We need to then type in the following command to rename the `.apj` file to the correct format `.px4`.
+
+```bash
+    mv arducopter.apj arducopter.px4
+```
+
+Once that is done, plug in your pixhawk board and open up QGroundControl. Then navigate to the firmware tab as shown in [Figure 16](#figure-16)
+
+#### Figure 16
+![QgroundControl Firmware Tab](images/firmware_update.png)
+
+*[Figure 16](#figure-16): QgroundControl Firmware Tab*
+
+
+Follow the instructions and unplug and replug the pixhawk. A dialogue box will open up. Pick the options as shown in [Figure 17](#figure-17).
+
+#### Figure 17
+![QgroundControl Firmware Option](images/qgc_custom_firmware.jpg)
+
+*[Figure 17](#figure-17): QgroundControl Firmware Option*
+
+Move onto the next subsection.
+
+## 11.2 Installing Ardupilot
+
+For this section, a Windows operating system is a **must**. Ardupilot mission planner does not work smoothly on Linux-based systems. Go to the following link and install Ardupilot Mission Planner ( you will need version `1.3.74` or higher).
+
+[https://ardupilot.org/planner/docs/mission-planner-installation.html](https://ardupilot.org/planner/docs/mission-planner-installation.html)
+
+
+
+After installation, connect the Pixhawk over USB. Then navigate to  `Setup -> Install Firmware` as shown in [Figure 18](#figure-18).
+
+#### Figure 18
+![Ardupilot Arducopter Firmware](images/ardupilot_firmware_pix.png)
+
+*[Figure 18](#figure-18): Ardupilot Arducopter Firmware*
+
+
+Pick the arducopter option and follow the instructions on the mission planner dialogue boxes to install the firmware. Once completed, unplug and replug the board and hit the connect button on the top right corner of the screen by selecting the autopilot SLCAN COM port in the port options with 115200 baud rate as shown in [Figure 19](#figure-19). You should now be connected to the Pixhawk. 
+
+#### Figure 19
+![Ardupilot Arducopter Firmware ports](images/setting_ardupilot_ports.png)
+
+*[Figure 19](#figure-19): Ardupilot Arducopter Firmware ports*
+
+The next step is clicking on `CONFIG -> Advanced Params` and using the `Find` option as shown in [Figure 19](#figure-19) and set both 
+
+```bash
+    CAN_D1_PROTOCOL=DroneCAN
+    CAN_D2_PROTOCOL=Drone_CAN
+```
+
+Then click on `write params` to write it to the Pixhawk. Then go to `SETUP -> DroneCAN/UAVCAN` and click pon `MAVlink CAN1`. You should see the devices on the CAN network be listed as shown in [Figure 20](#figure-20).
+
+#### Figure 20
+![DroneCAN settings](images/drone_can_settings.png)
+
+*[Figure 20](#figure-20): DroneCAN settings*
+
+Now, click on `Menu` next to the `com.cubepilot.here3+` and click on `Update`. Click `yes` in the dialogue box that pops up to search the internet for the new firmware and wait for it to be downloaded.
+
+> **Note**:   If the `Update` option isn't working as well. Pick `Update Beta` and then click on yes. Then go back and click on `Update` to finish the update. The process is a bit finicky and might need multiple tries to hit update.  
