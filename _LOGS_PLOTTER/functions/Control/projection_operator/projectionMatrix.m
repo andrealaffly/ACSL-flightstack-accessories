@@ -1,0 +1,28 @@
+function projected_matrix = projectionMatrix(matrix,matrix_d,x_e,epsilon,S)
+%PROJECTIONMATRIX Function to apply projectionVector to a matrix by reshaping it
+% into a vector
+
+rows = size(matrix, 1);
+cols = size(matrix, 2);
+total_elements = rows * cols;
+
+% Reshape the matrices into a column vector
+reshaped_matrix = reshape(matrix, [total_elements, 1]);
+reshaped_matrix_d = reshape(matrix_d, [total_elements, 1]);
+
+% Apply the projectionVector on the reshaped vector
+projected_vector = projectionVector(reshaped_matrix, ...
+                                    reshaped_matrix_d, ...
+                                    x_e, ...
+                                    epsilon, ...
+                                    S);  
+
+% Reshape the projected vector back into a matrix of the same size
+projected_matrix = reshape(projected_vector, [rows, cols]);
+
+
+
+
+
+end
+

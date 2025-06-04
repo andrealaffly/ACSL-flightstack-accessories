@@ -7,7 +7,7 @@ plot(log.time,log.euler_angles_dot.roll_dot,'r-','LineWidth',2)
 hold on
 plot(log.time,log.desired_euler_angles.roll_dot,'b-.','LineWidth',2)
 legend('$$\dot{\phi}(t)$$','$$\dot{\phi}_{\rm d}(t)$$');
-xlabel('$t$ [s]','interpreter','latex','fontsize',pp.font_size)
+% xlabel('$t$ [s]','interpreter','latex','fontsize',pp.font_size)
 ylabel('Roll rate [rad/s]','interpreter','latex','fontsize',pp.font_size)
 title(pp.folder_controller,'interpreter','latex','fontsize',pp.font_size_title)
 axis tight
@@ -19,7 +19,7 @@ plot(log.time,log.euler_angles_dot.pitch_dot,'r-','LineWidth',2)
 hold on
 plot(log.time,log.desired_euler_angles.pitch_dot,'b-.','LineWidth',2)
 legend('$$\dot{\theta}(t)$$','$$\dot{\theta}_{\rm d}(t)$$');
-xlabel('$t$ [s]','interpreter','latex','fontsize',pp.font_size)
+% xlabel('$t$ [s]','interpreter','latex','fontsize',pp.font_size)
 ylabel('Pitch rate [rad/s]','interpreter','latex','fontsize',pp.font_size)
 axis tight
 hold off

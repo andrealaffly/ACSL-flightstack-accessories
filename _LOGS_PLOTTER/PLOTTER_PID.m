@@ -5,13 +5,13 @@ clc
 %% Define global propertries
 
 % Define the folder name 
-folder_name = '20240712';  
+folder_name = '20240613';  
 
 % Define the controller folder name
 folder_controller = 'PID';
 
 % Define the workspace filename
-workspace_filename = 'workspace_log_20240712_150116.mat';
+workspace_filename = 'workspace_log_20240613_121802.mat';
 
 % Extract year and month from the folder_name
 folder_year = folder_name(1:4);

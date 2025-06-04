@@ -39,6 +39,9 @@ function controller_matrices = controllerMatrices_MRAC(vp, gains)
   % Solve the continuous Lyapunov equation to compute P_rotational
   controller_matrices.P_rotational = lyap(controller_matrices.A_ref_rotational', gains.ADAPTIVE.Q_rotational);
 
+  % Initialize Projection Operator parameters
+  controller_matrices = initializeProjectionEllipsoidParams_MRAC(gains, controller_matrices);
+
 
 
 

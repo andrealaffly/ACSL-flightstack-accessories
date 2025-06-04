@@ -3,20 +3,27 @@ clear
 close all
 clc
 
-addpath(".\functions\");
+% TODO create short flight folder for logs_debug
+
+addpath(genpath(".\functions\"));
 
 % Date of the directory to analyze
 % ------------------------------------------------------------------------------
-properties.date_folder = '20240917';
+properties.date_folder = '20250425';
 % ------------------------------------------------------------------------------
 % Controller name of the directory to analyze
 % ------------------------------------------------------------------------------
-properties.controller_folder = 'MRAC';
+properties.controller_folder = 'FunnelTwoLayerMRAC'; 
 % ------------------------------------------------------------------------------
 % Switch to control whether mocap data should be processed
 % Set to true to process mocap data, false to skip
 % ------------------------------------------------------------------------------
-processMocap = true;  
+processMocap = false;  
+% ------------------------------------------------------------------------------
+% Switch to control whether Debug log data should be processed
+% Set to true to process Debug log data, false to skip
+% ------------------------------------------------------------------------------
+processDebug = false;  
 % ------------------------------------------------------------------------------
 % Set the duration in seconds to check if the log file duration
 % is less than "minimum_mission_time_duration"
@@ -37,12 +44,12 @@ properties.year_folder = properties.date_folder(1:4);
 properties.month_folder = properties.date_folder(5:6);
 
 % Initialize directories and file lists
-properties = initializeDirectoriesAndFiles(properties, processMocap);
+properties = initializeDirectoriesAndFiles(properties, processMocap, processDebug);
 
 % Process each log file in the directory
 for i = 1:length(properties.log_files)
     [log, der, mocap, gains, controller_matrices, properties] = ...
-      processLogFile(properties, i, processMocap, vp);
+      processLogFile(properties, i, processMocap, processDebug, vp);
 end
 
 % ------------------------------------------------------------------------------
@@ -50,12 +57,16 @@ end
 % ------------------------------------------------------------------------------
 handleShortFlights(properties, processMocap);
 
+disp('[INFO] DONE processing data!');
+
 %% AUXILLARY FUNCTIONS
 % ------------------------------------------------------------------------------
 % AUXILLARY FUNCTIONS
 % ------------------------------------------------------------------------------
 
-function properties = initializeDirectoriesAndFiles(properties, processMocap)
+function properties = initializeDirectoriesAndFiles(properties, ...
+                                                    processMocap, ...
+                                                    processDebug)
   % Create base folder
   properties.base_folder = [properties.year_folder, '/', ...
                             properties.month_folder, '/', ...
@@ -81,8 +92,23 @@ function properties = initializeDirectoriesAndFiles(properties, processMocap)
     if length(properties.log_files) ~= length(properties.mocap_files)
         error('The number of log files and mocap files does not match.');
     end
-    % List to hold mocap files with time less than 10 seconds
+    % List to hold mocap files with time less than 
+    % properties.minimum_mission_time_duration seconds
     properties.short_mocap_files = {};  
+  end
+
+  if processDebug
+    % Path to the logs_debug directory
+    properties.debug_folder = ['../', properties.base_folder, '/logs_debug']; 
+    % Get a list of all .log files in the logs_debug folder
+    properties.debug_files = dir(fullfile(properties.debug_folder, '*.log'));
+    % Ensure that the number of log files and debug files are the same
+    if length(properties.log_files) ~= length(properties.debug_files)
+        error('The number of log files and logs_debug files does not match.');
+    end
+    % List to hold logs_debug files with time less than 
+    % properties.minimum_mission_time_duration seconds
+    properties.short_debug_files = {};  
   end
   
   % GAINS folder
@@ -97,7 +123,7 @@ end
 
 
 function [log, der, mocap, gains, controller_matrices, properties] = ...
-  processLogFile(properties, fileIndex, processMocap, vp)
+  processLogFile(properties, fileIndex, processMocap, processDebug, vp)
 
     % Initialize output
     log = [];
@@ -114,6 +140,12 @@ function [log, der, mocap, gains, controller_matrices, properties] = ...
         % Get the full path of the current mocap file
         properties.mocap_filename = fullfile(properties.mocap_files(fileIndex).folder, ...
             properties.mocap_files(fileIndex).name);
+    end
+
+    if processDebug
+        % Get the full path of the current log_debug file
+        properties.debug_filename = fullfile(properties.debug_files(fileIndex).folder, ...
+            properties.debug_files(fileIndex).name);
     end
 
     % Extract the base name from the filename
@@ -152,6 +184,12 @@ function [log, der, mocap, gains, controller_matrices, properties] = ...
         properties.gains_filename = fullfile(properties.gains_folder, ...
           ['gains_mrac_', properties.timestamp, '.json']);
         % disp(['Matching gains file: ', properties.gains_filename]);
+      case 'TwoLayerMRAC'
+        properties.gains_filename = fullfile(properties.gains_folder, ...
+          ['gains_two_layer_mrac_', properties.timestamp, '.json']);
+      case 'FunnelTwoLayerMRAC'
+        properties.gains_filename = fullfile(properties.gains_folder, ...
+          ['gains_', properties.timestamp, '.json']);
       otherwise
         warning('Unexpected Controller type')
     end
@@ -165,6 +203,12 @@ function [log, der, mocap, gains, controller_matrices, properties] = ...
       MocapDataMatrix = readmatrix(properties.mocap_filename);
     end
 
+    if processDebug
+      % Extracting data from the current log_debug file
+      % disp(['Processing log_debug file: ', properties.debug_filename]); % Debugging statement
+      DebugDataMatrix = readmatrix(properties.debug_filename);
+    end
+
     %----------------------------------------------------------------------
     % LOGGED VALUES
     if ~isempty(LogDataMatrix)
@@ -173,6 +217,12 @@ function [log, der, mocap, gains, controller_matrices, properties] = ...
           log = getLogData_PID(LogDataMatrix);
         case 'MRAC'
           log = getLogData_MRAC(LogDataMatrix);
+          gains = importGains_MRAC(properties.gains_filename);
+        case 'TwoLayerMRAC'
+          log = getLogData_TLMRAC(LogDataMatrix);
+          gains = importGains_TLMRAC(properties.gains_filename);
+        case 'FunnelTwoLayerMRAC'
+          log = getLogData_FunTLMRAC(LogDataMatrix);
           gains = importGains_MRAC(properties.gains_filename);
         otherwise
           warning('Unexpected Controller type')
@@ -194,7 +244,13 @@ function [log, der, mocap, gains, controller_matrices, properties] = ...
           der = computeDerivedValues(log, vp);
         case 'MRAC'
           der = computeDerivedValues(log, vp);
-          [der, controller_matrices] = computeDerivedValues_mrac(der, log, vp, gains);
+          [der, controller_matrices] = computeDerivedValues_MRAC(der, log, vp, gains);
+        case 'TwoLayerMRAC'
+          der = computeDerivedValues(log, vp);
+          [der, controller_matrices] = computeDerivedValues_TLMRAC(der, log, vp, gains);
+          case 'FunnelTwoLayerMRAC'
+          der = computeDerivedValues(log, vp);
+          [der, controller_matrices] = computeDerivedValues_FunTLMRAC(der, log, vp, gains);
         otherwise
           warning('Unexpected Controller type')
       end
@@ -214,7 +270,21 @@ function [log, der, mocap, gains, controller_matrices, properties] = ...
       end
     end
 
-    % Check if the log and mocap file have enough rows and delete the files
+    if processDebug
+      if ~isempty(DebugDataMatrix)
+        %----------------------------------------------------------------------
+        % MOCAP VALUES
+        log.debug = getDebugData(DebugDataMatrix);
+        %----------------------------------------------------------------------
+        % CHECK ON TIME DURATION
+        % Check if the log_debug file duration is less than "properties.minimum_mission_time_duration"
+        if max(log.debug.time) < properties.minimum_mission_time_duration
+            properties.short_debug_files{end+1} = properties.debug_filename;
+        end
+      end
+    end
+
+    % Check if the log, mocap, and log_debug file have enough rows and delete the files
     % in case they don't
     if (size(LogDataMatrix, 1) < 2 || isempty(LogDataMatrix))
       deleteFileIfNoData(properties, properties.log_filename, LogDataMatrix);
@@ -223,6 +293,10 @@ function [log, der, mocap, gains, controller_matrices, properties] = ...
       if (processMocap && (size(MocapDataMatrix, 1) < 2 || isempty(MocapDataMatrix)))
           deleteFileIfNoData(properties, properties.mocap_filename, MocapDataMatrix);
           mocap = 0;
+      end
+      if (processDebug && (size(DebugDataMatrix, 1) < 2 || isempty(DebugDataMatrix)))
+          deleteFileIfNoData(properties, properties.debug_filename, DebugDataMatrix);
+          log.debug = 0;
       end
       return; % Skip this iteration and go to the next file
     end

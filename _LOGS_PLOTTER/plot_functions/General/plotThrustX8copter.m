@@ -40,34 +40,36 @@ hold off
 axis tight
 xlim([pp.x_lim_min,pp.x_lim_max])
 
-% Normalized thrust
-set(figure,'Color','white','WindowState','maximized')
-subplot(2,1,1)
-plot(log.time,log.thrust_motors_normalized.T1,'b-','LineWidth',2)
-hold on
-plot(log.time,log.thrust_motors_normalized.T2,'r-.','LineWidth',2)
-plot(log.time,log.thrust_motors_normalized.T3,'g--','LineWidth',2)
-plot(log.time,log.thrust_motors_normalized.T4,'k-','LineWidth',0.5)
-legend('$T_1(t)$','$T_2(t)$','$T_3(t)$','$T_4(t)$');
-xlabel('$t$ [s]','interpreter','latex','fontsize',pp.font_size)
-ylabel('Thrust motor $i$ [-]','interpreter','latex','fontsize',pp.font_size)
-title(pp.folder_controller,'interpreter','latex','fontsize',pp.font_size_title)
-hold off
-axis tight
-xlim([pp.x_lim_min,pp.x_lim_max])
-
-subplot(2,1,2)
-plot(log.time,log.thrust_motors_normalized.T5,'r-.','LineWidth',2)
-hold on
-plot(log.time,log.thrust_motors_normalized.T6,'b-','LineWidth',2)
-plot(log.time,log.thrust_motors_normalized.T7,'k-','LineWidth',0.5)
-plot(log.time,log.thrust_motors_normalized.T8,'g--','LineWidth',2)
-legend('$T_5(t)$','$T_6(t)$','$T_7(t)$','$T_8(t)$');
-xlabel('$t$ [s]','interpreter','latex','fontsize',pp.font_size)
-ylabel('Thrust motor $i$ [-]','interpreter','latex','fontsize',pp.font_size)
-hold off
-axis tight
-xlim([pp.x_lim_min,pp.x_lim_max])
+if isfield(log, 'thrust_motors_normalized')
+    % Normalized thrust
+    set(figure,'Color','white','WindowState','maximized')
+    subplot(2,1,1)
+    plot(log.time,log.thrust_motors_normalized.T1,'b-','LineWidth',2)
+    hold on
+    plot(log.time,log.thrust_motors_normalized.T2,'r-.','LineWidth',2)
+    plot(log.time,log.thrust_motors_normalized.T3,'g--','LineWidth',2)
+    plot(log.time,log.thrust_motors_normalized.T4,'k-','LineWidth',0.5)
+    legend('$T_1(t)$','$T_2(t)$','$T_3(t)$','$T_4(t)$');
+    xlabel('$t$ [s]','interpreter','latex','fontsize',pp.font_size)
+    ylabel('Thrust motor $i$ [-]','interpreter','latex','fontsize',pp.font_size)
+    title(pp.folder_controller,'interpreter','latex','fontsize',pp.font_size_title)
+    hold off
+    axis tight
+    xlim([pp.x_lim_min,pp.x_lim_max])
+    
+    subplot(2,1,2)
+    plot(log.time,log.thrust_motors_normalized.T5,'r-.','LineWidth',2)
+    hold on
+    plot(log.time,log.thrust_motors_normalized.T6,'b-','LineWidth',2)
+    plot(log.time,log.thrust_motors_normalized.T7,'k-','LineWidth',0.5)
+    plot(log.time,log.thrust_motors_normalized.T8,'g--','LineWidth',2)
+    legend('$T_5(t)$','$T_6(t)$','$T_7(t)$','$T_8(t)$');
+    xlabel('$t$ [s]','interpreter','latex','fontsize',pp.font_size)
+    ylabel('Thrust motor $i$ [-]','interpreter','latex','fontsize',pp.font_size)
+    hold off
+    axis tight
+    xlim([pp.x_lim_min,pp.x_lim_max])
+end
 
 end
 

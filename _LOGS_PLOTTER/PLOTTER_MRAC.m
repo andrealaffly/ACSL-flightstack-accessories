@@ -14,13 +14,13 @@ addpath(genpath('.\plot_functions'));
 
 % ==============================================================================
 % Define the folder name 
-pp.folder_name = '20240917';  
+pp.folder_name = '20240729';  
 
 % Define the controller folder name
 pp.folder_controller = 'MRAC';
 
 % Define the workspace filename
-pp.workspace_filename = 'workspace_log_20240917_141550.mat';
+pp.workspace_filename = 'workspace_log_20240729_163324.mat';
 
 % Set flag to true to automatically load the most recent workspace
 % contained in pp.folder_name
@@ -35,7 +35,7 @@ pp.font_size = 20;
 pp.font_size_title = 22;
 
 pp.x_lim_min = 10;
-% pp.x_lim_max = 23.5;
+% pp.x_lim_max = 20;
 pp.x_lim_max = log.time(end);
  
 
