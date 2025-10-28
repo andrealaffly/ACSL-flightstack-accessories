@@ -16,17 +16,17 @@ addpath(genpath('.\plot_functions'));
 
 % ==============================================================================
 % Define the folder name 
-pp.folder_name = '20250425';  
+pp.folder_name = '20251013';  
 
 % Define the controller folder name
-pp.folder_controller = 'FunnelTwoLayerMRAC';
+pp.folder_controller = 'FunnelTwoLayerMRAC'; % FunnelTwoLayerMRAC
 
 % Define the workspace filename
-pp.workspace_filename = 'workspace_log_20250113_201341.mat';
+pp.workspace_filename = 'workspace_log_20251013_190241.mat';
 
 % Set flag to true to automatically load the most recent workspace
 % contained in pp.folder_name
-pp.auto_load_last_workspace = true;
+pp.auto_load_last_workspace = false;
 % ==============================================================================
 
 % % Interactive dialog to select the workspace
@@ -39,10 +39,10 @@ pp = loadWorkspace(pp);
 pp.font_size = 20;
 pp.font_size_title = 22;
 
-pp.x_lim_min = 0;
-% pp.x_lim_min = 10;
-pp.x_lim_max = 23.5;
-% pp.x_lim_max = log.time(end);
+% pp.x_lim_min = 0;
+% pp.x_lim_max = 41.6;
+pp.x_lim_min = 10;
+pp.x_lim_max = log.time(end);
  
 
 %% Plot thrust vs time QUADCOPTER
@@ -183,6 +183,9 @@ plotOUTLnormTrackingError(log, der, pp);
 %% Plot INNER LOOP norm of tracking error
 plotINNLnormTrackingError(log, der, pp);
 
+%% Plot OUTER LOOP L2-norm of tracking error
+plotOUTLnormL2TrackingError(log, der, pp);
+
 %% Plot OUTER LOOP Adaptive Gain derivative K_hat_x_dot
 plotOUTLKhatXdot(log, der, pp);
 
@@ -215,6 +218,12 @@ plotINNLdeadZoneModValue(log, der, pp);
 
 %% Plot OUTER LOOP FUNNEL xi function
 plotOUTLfunnelXiFunction(log, der, pp);
+
+%% Plot OUTER LOOP FUNNEL variables
+plotOUTLfunnel(log, der, pp, gains);
+
+%% Interactive Plot OUTER LOOP FUNNEL variables
+interactivePlotOUTLfunnel(log, der, pp, gains);
 
 
 %% MOCAP

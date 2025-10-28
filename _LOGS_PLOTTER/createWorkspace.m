@@ -9,7 +9,7 @@ addpath(genpath(".\functions\"));
 
 % Date of the directory to analyze
 % ------------------------------------------------------------------------------
-properties.date_folder = '20250425';
+properties.date_folder = '20251020';
 % ------------------------------------------------------------------------------
 % Controller name of the directory to analyze
 % ------------------------------------------------------------------------------
@@ -18,7 +18,7 @@ properties.controller_folder = 'FunnelTwoLayerMRAC';
 % Switch to control whether mocap data should be processed
 % Set to true to process mocap data, false to skip
 % ------------------------------------------------------------------------------
-processMocap = false;  
+processMocap = true;  
 % ------------------------------------------------------------------------------
 % Switch to control whether Debug log data should be processed
 % Set to true to process Debug log data, false to skip
@@ -48,7 +48,7 @@ properties = initializeDirectoriesAndFiles(properties, processMocap, processDebu
 
 % Process each log file in the directory
 for i = 1:length(properties.log_files)
-    [log, der, mocap, gains, controller_matrices, properties] = ...
+    [log, der, mocap, gains, controller_matrices, info, properties] = ...
       processLogFile(properties, i, processMocap, processDebug, vp);
 end
 
@@ -119,10 +119,42 @@ function properties = initializeDirectoriesAndFiles(properties, ...
   % List to hold gains files to move
   properties.short_gains_files = {};
 
+  
+  switch properties.controller_folder
+      case 'FunnelTwoLayerMRAC'
+          % DER_GAINS folder
+          % Path to the der_gains directory
+          properties.der_gains_folder = ['../', properties.base_folder, '/der_gains'];
+          % Get a list of all der_gains files in the der_gains folder
+          properties.der_gains_files = dir(fullfile(properties.der_gains_folder, 'der_gains_*.json'));
+          % List to hold der_gains files to move
+          properties.short_der_gains_files = {};
+
+          % INFO folder
+          % Path to the info directory
+          properties.info_folder = ['../', properties.base_folder, '/info'];
+          properties.git_info_folder = fullfile(properties.info_folder, 'git_info');
+          properties.safe_mech_folder = fullfile(properties.info_folder, 'safe_mech');
+          properties.low_pass_filter_folder = ... 
+            fullfile(properties.info_folder, 'low_pass_filter');
+          % Get a list of all files in the folder
+          properties.git_info_files = dir(fullfile(properties.git_info_folder, 'git_info_*.json'));
+          properties.safe_mech_files = dir(fullfile(properties.safe_mech_folder, 'safe_mech_*.json'));
+          properties.low_pass_filter_files = ...
+            dir(fullfile(properties.low_pass_filter_folder, 'low_pass_filter_*.json'));
+          % List to hold short files to move
+          properties.short_git_info_files = {};
+          properties.short_safe_mech_files = {};
+          properties.short_low_pass_filter_files = {};
+      otherwise
+        warning('[initializeDirectoriesAndFiles]: Unexpected Controller type')
+
+  end
+
 end
 
 
-function [log, der, mocap, gains, controller_matrices, properties] = ...
+function [log, der, mocap, gains, controller_matrices, info, properties] = ...
   processLogFile(properties, fileIndex, processMocap, processDebug, vp)
 
     % Initialize output
@@ -131,6 +163,7 @@ function [log, der, mocap, gains, controller_matrices, properties] = ...
     mocap = [];
     gains = [];
     controller_matrices = [];
+    info = [];
   
     % Get the full path of the current log file
     properties.log_filename = fullfile(properties.log_files(fileIndex).folder, ...
@@ -190,8 +223,16 @@ function [log, der, mocap, gains, controller_matrices, properties] = ...
       case 'FunnelTwoLayerMRAC'
         properties.gains_filename = fullfile(properties.gains_folder, ...
           ['gains_', properties.timestamp, '.json']);
+        properties.der_gains_filename = fullfile(properties.der_gains_folder, ...
+          ['der_gains_', properties.timestamp, '.json']);
+        properties.git_info_filename = fullfile(properties.git_info_folder, ...
+          ['git_info_', properties.timestamp, '.json']);
+        properties.safe_mech_filename = fullfile(properties.safe_mech_folder, ...
+          ['safe_mech_', properties.timestamp, '.json']);
+        properties.low_pass_filter_filename = fullfile(properties.low_pass_filter_folder, ...
+          ['low_pass_filter_', properties.timestamp, '.json']);
       otherwise
-        warning('Unexpected Controller type')
+        warning('[processLogFile]: Unexpected Controller type')
     end
 
     % Extracting data from the current log file
@@ -221,11 +262,49 @@ function [log, der, mocap, gains, controller_matrices, properties] = ...
         case 'TwoLayerMRAC'
           log = getLogData_TLMRAC(LogDataMatrix);
           gains = importGains_TLMRAC(properties.gains_filename);
+        % case 'FunnelTwoLayerMRAC'
+        %   log = getLogData_FunTLMRAC(LogDataMatrix);
+        %   gains = importGains_MRAC(properties.gains_filename);
+        %   gains.DER = importDerGains(properties.der_gains_filename);
+        %   info.git_info = jsondecode(fileread(properties.git_info_filename));
+        %   info.safe_mech = jsondecode(fileread(properties.safe_mech_filename));
+        %   info.low_pass_filter = jsondecode(fileread(properties.low_pass_filter_filename));
         case 'FunnelTwoLayerMRAC'
           log = getLogData_FunTLMRAC(LogDataMatrix);
           gains = importGains_MRAC(properties.gains_filename);
+          gains.DER = importDerGains(properties.der_gains_filename);
+        
+          % --- Safe JSON reads with warnings if missing ---
+          info = struct(); % initialize to avoid "unassigned" issues
+        
+          if isfile(properties.git_info_filename)
+            info.git_info = jsondecode(fileread(properties.git_info_filename));
+          else
+            warning('processLogFile:MissingGitInfo', ...
+              'Git info file not found: %s. Continuing without git_info.', ...
+              properties.git_info_filename);
+            info.git_info = struct(); % fallback empty struct
+          end
+        
+          if isfile(properties.safe_mech_filename)
+            info.safe_mech = jsondecode(fileread(properties.safe_mech_filename));
+          else
+            warning('processLogFile:MissingSafeMech', ...
+              'Safe mechanism file not found: %s. Continuing without safe_mech.', ...
+              properties.safe_mech_filename);
+            info.safe_mech = struct();
+          end
+        
+          if isfile(properties.low_pass_filter_filename)
+            info.low_pass_filter = jsondecode(fileread(properties.low_pass_filter_filename));
+          else
+            warning('processLogFile:MissingLowPassFilter', ...
+              'Low-pass filter file not found: %s. Continuing without low_pass_filter.', ...
+              properties.low_pass_filter_filename);
+            info.low_pass_filter = struct();
+          end
         otherwise
-          warning('Unexpected Controller type')
+          warning('[processLogFile]: Unexpected Controller type')
       end
      
       %----------------------------------------------------------------------
@@ -250,9 +329,9 @@ function [log, der, mocap, gains, controller_matrices, properties] = ...
           [der, controller_matrices] = computeDerivedValues_TLMRAC(der, log, vp, gains);
           case 'FunnelTwoLayerMRAC'
           der = computeDerivedValues(log, vp);
-          [der, controller_matrices] = computeDerivedValues_FunTLMRAC(der, log, vp, gains);
+          der = computeDerivedValues_FunTLMRAC(der, log, vp, gains);
         otherwise
-          warning('Unexpected Controller type')
+          warning('[processLogFile]: Unexpected Controller type')
       end
     end
 
@@ -299,6 +378,19 @@ function [log, der, mocap, gains, controller_matrices, properties] = ...
           log.debug = 0;
       end
       return; % Skip this iteration and go to the next file
+    end
+
+    switch properties.controller_folder
+      case 'FunnelTwoLayerMRAC'
+          % CHECK ON TIME DURATION
+          if max(log.time) < properties.minimum_mission_time_duration
+              properties.short_der_gains_files{end+1} = properties.der_gains_filename;
+              properties.short_git_info_files{end+1} = properties.git_info_filename;
+              properties.short_safe_mech_files{end+1} = properties.safe_mech_filename;
+              properties.short_low_pass_filter_files{end+1} = properties.low_pass_filter_filename;
+          end
+      otherwise
+          warning('[processLogFile]: Unexpected Controller type')
     end
 
     % Saving the workspace for the current log file

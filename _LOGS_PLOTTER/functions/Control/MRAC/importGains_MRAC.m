@@ -33,9 +33,6 @@ function gains = importGains_MRAC(jsonFile)
         end
     end
 
-    
-
-
 end
 
 

@@ -1,4 +1,4 @@
-function plotOUTLfunnel(log, der, pp)
+function plotOUTLfunnel(log, der, pp, gains)
 % Plot OUTER LOOP Funnel variables
 
 set(figure, 'Color', 'white', 'WindowState', 'maximized')
@@ -15,8 +15,11 @@ colors = struct( ...
     'sigma_nom',    [0.9290, 0.6940, 0.1250], ... % yellow-orange
     'sigma_ideal',  [0.6350, 0.0780, 0.1840], ... % dark red
     'H_function',   [0, 0, 0],                ... % black
-    'diameter',     [0.2, 0.7, 0.7],          ...
-    'eMe',          [0.8, 0.5, 0.9]           ...
+    'diameter_der', [0.2, 0.7, 0.7],          ...
+    'eMe_der',      [0.8, 0.5, 0.9],          ...
+    'diameter',     [0.1, 0.6, 0.6],          ...
+    'eT_M_e',       [0.7, 0.4, 0.8],          ...
+    'e_tran_dot',   [0.3, 0.3, 0.3]           ...
 );
 
 if isfield(log.outer_loop.funnel, 'xi')
@@ -52,17 +55,41 @@ if isfield(log.outer_loop.funnel, 'H_function')
     legend_entries{end+1} = '$H(t,e)$';
 end
 if isfield(der.outer_loop.funnel, 'diameter')
-    plot(log.time, der.outer_loop.funnel.diameter, ':', 'Color', colors.diameter, 'LineWidth', 2.3)
-    legend_entries{end+1} = 'Funnel Diameter';
+    plot(log.time, der.outer_loop.funnel.diameter, ':', 'Color', colors.diameter_der, 'LineWidth', 2.3)
+    legend_entries{end+1} = 'Funnel Diameter der';
 end
 if isfield(der.outer_loop.funnel, 'eMe')
-    plot(log.time, der.outer_loop.funnel.eMe, '--', 'Color', colors.eMe, 'LineWidth', 1.8)
-    legend_entries{end+1} = '$e^{\rm T}Me$';
+    plot(log.time, der.outer_loop.funnel.eMe, '--', 'Color', colors.eMe_der, 'LineWidth', 1.8)
+    legend_entries{end+1} = '$e^{\rm T}Me$ der';
 end
 
+if isfield(log.outer_loop.funnel, 'diameter')
+    plot(log.time, log.outer_loop.funnel.diameter, '--', 'Color', colors.diameter, 'LineWidth', 2.3)
+    legend_entries{end+1} = 'Funnel Diameter';
+end
+if isfield(log.outer_loop.funnel, 'eT_M_e')
+    plot(log.time, log.outer_loop.funnel.eT_M_e, '-.', 'Color', colors.eT_M_e, 'LineWidth', 1.8)
+    legend_entries{end+1} = '$e^{\rm T}Me$';
+end
+if isfield(log.outer_loop, 'e_tran_dot')
+    plot(log.time, der.outer_loop.e_tran_dot_norm, '-.', 'Color', colors.e_tran_dot, 'LineWidth', 1.8)
+    legend_entries{end+1} = '$\| \dot{e} \|$';
+end
+if isfield(der.outer_loop, 'tracking_error_dot_norm')
+    plot(log.time, der.outer_loop.tracking_error_dot_norm, '-.', 'Color', colors.e_tran_dot, 'LineWidth', 1.8)
+    legend_entries{end+1} = '$\| \dot{e} \|$';
+end
+
+
 % Plot horizontal line for e_min
-if isfield(der.outer_loop.funnel, 'e_min')
-    yline(der.outer_loop.funnel.e_min, '-', ...
+if isfield(gains, 'e_min_funnel_tran')
+    yline(gains.e_min_funnel_tran, '-', ...
+        'Color', [0.3, 0.3, 0.3], 'LineWidth', 2.0, 'LineStyle', '-.')
+    legend_entries{end+1} = '$e_{\min}$';
+end
+% Plot horizontal line for e_min
+if isfield(gains.ADAPTIVE, 'e_min_funnel_translational')
+    yline(gains.ADAPTIVE.e_min_funnel_translational, '-', ...
         'Color', [0.3, 0.3, 0.3], 'LineWidth', 2.0, 'LineStyle', '-.')
     legend_entries{end+1} = '$e_{\min}$';
 end

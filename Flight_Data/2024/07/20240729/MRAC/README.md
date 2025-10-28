@@ -2,6 +2,13 @@
 
 ## Hovering Tests (Off-Nominal Conditions)
 
+<p align="center">
+  <img src="/Images/drone_real_with_2steelballs_cropped.jpg" alt="X8-Copter during off-nominal test flight" width="40%">
+</p>
+<p align="center">
+  <em>Figure: X8-Copter in off-nominal condition for performing trajectory tracking tests.</em>
+</p>
+
 ### **Log: `workspace_log_20240729_162628`**  
 - **Platform:** X8-Copter  
 - **Conditions:** Off-nominal with box and 1 small steel ball  

@@ -31,13 +31,19 @@ for ii = 1:length(log.time)
         der.outer_loop.tracking_error(ii,:) * ...
         gains.M_funnel_tran * ...
         der.outer_loop.tracking_error(ii,:)';
+
+    der.outer_loop.e_tran_dot_vector(ii,:) = ...
+        [log.outer_loop.e_tran_dot.x(ii);
+         log.outer_loop.e_tran_dot.y(ii);
+         log.outer_loop.e_tran_dot.z(ii);
+         log.outer_loop.e_tran_dot.vx(ii);
+         log.outer_loop.e_tran_dot.vy(ii);
+         log.outer_loop.e_tran_dot.vz(ii)];
+
+    % OUTER LOOP trajectory tracking error derivative norm
+    der.outer_loop.e_tran_dot_norm(ii,1) = norm(der.outer_loop.e_tran_dot_vector(ii));
+
 end
-
-
-der.outer_loop.funnel.e_min = ... 
-    (2 * gains.xi_bar_d_funnel_tran * gains.lambda_max_M_funnel_tran) / ...
-    gains.lambda_min_Q_M_funnel_tran;
-
 
 end
 
