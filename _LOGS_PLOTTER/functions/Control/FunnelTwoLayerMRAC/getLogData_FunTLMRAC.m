@@ -310,8 +310,26 @@ function log = getLogData_FunTLMRAC(LogDataMatrix)
     log.safety_mechanism.safe_mech_activated = LogDataMatrix(:, 258);
 
     log.outer_loop.funnel.eta = LogDataMatrix(:, 259);
-    log.outer_loop.funnel.active_condition = LogDataMatrix(:, 260);
+    log.outer_loop.funnel.eta_dot = LogDataMatrix(:, 260);
     log.outer_loop.funnel.xi = LogDataMatrix(:, 261);
+
+    log.outer_loop.funnel.Ve_function = LogDataMatrix(:, 262);
+    log.outer_loop.funnel.lambda_sat = LogDataMatrix(:, 263);
+    log.outer_loop.funnel.sigma_nom = LogDataMatrix(:, 264);
+    log.outer_loop.funnel.sigma_ideal = LogDataMatrix(:, 265);
+    log.outer_loop.funnel.H_function = LogDataMatrix(:, 266);
+    log.outer_loop.funnel.case_eta_dot = LogDataMatrix(:, 267);
+
+    log.outer_loop.tracking_error_dot.x = LogDataMatrix(:, 268);
+    log.outer_loop.tracking_error_dot.y = LogDataMatrix(:, 269);
+    log.outer_loop.tracking_error_dot.z = LogDataMatrix(:, 270);
+    log.outer_loop.tracking_error_dot.vx = LogDataMatrix(:, 271);
+    log.outer_loop.tracking_error_dot.vy = LogDataMatrix(:, 272);
+    log.outer_loop.tracking_error_dot.vz = LogDataMatrix(:, 273);
+
+    log.outer_loop.Derivative_filtered.x = LogDataMatrix(:, 274);
+    log.outer_loop.Derivative_filtered.y = LogDataMatrix(:, 275);
+    log.outer_loop.Derivative_filtered.z = LogDataMatrix(:, 276);
    
 end
 

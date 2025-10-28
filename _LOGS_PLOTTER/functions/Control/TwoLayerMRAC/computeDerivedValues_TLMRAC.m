@@ -463,5 +463,13 @@ function [der, controller_matrices] = computeDerivedValues_TLMRAC(der, log, vp, 
 
     end
 
+    % Find indices where time >= 10s
+    idx_start = find(log.time >= 10, 1);
+    % Zero-out all values before 10s (so integration starts at 10s)
+    error_norm_squared = der.outer_loop.tracking_error_norm.^2;
+    error_norm_squared(1:idx_start-1) = 0;
+    % Compute cumulative L2 norm starting from t = 10s
+    der.outer_loop.tracking_error_L2norm = sqrt(cumtrapz(log.time, error_norm_squared));
+
 end
 

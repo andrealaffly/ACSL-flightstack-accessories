@@ -1,8 +1,4 @@
-function der = PyC_computeDerivedValues_FunMRAC(log, der, gains)
-
-% OUTER LOOP FUNNEL Diameter
-der.outer_loop.funnel.diameter = ...
-    gains.eta_max_funnel_tran - log.outer_loop.funnel.eta.^2;
+function der = PyC_computeDerivedValues_MRAC(log, der, gains)
 
 for ii = 1:length(log.time)
     % OUTER LOOP trajectory tracking error
@@ -17,6 +13,17 @@ for ii = 1:length(log.time)
     % OUTER LOOP trajectory tracking error norm
     der.outer_loop.tracking_error_norm(ii,1) = norm(der.outer_loop.tracking_error(ii));
 
+    % OUTER LOOP tracking error wrt User-Defined Trajectory
+    tracking_error_userdeftraj_translational = ...
+        [log.position.x(ii) - log.user_defined_position.x(ii);
+         log.position.y(ii) - log.user_defined_position.y(ii);
+         log.position.z(ii) - log.user_defined_position.z(ii);
+         log.velocity.x(ii) - log.user_defined_velocity.x(ii);
+         log.velocity.y(ii) - log.user_defined_velocity.y(ii);
+         log.velocity.z(ii) - log.user_defined_velocity.z(ii)];
+
+    der.outer_loop.tracking_error_userdeftraj_norm(ii,1) = norm(tracking_error_userdeftraj_translational);
+
     % INNER LOOP trajectory tracking error
     der.inner_loop.tracking_error(ii,:) = ...
         [log.angular_velocity.x(ii) - log.inner_loop.reference_model.angular_velocity.x(ii);
@@ -26,24 +33,8 @@ for ii = 1:length(log.time)
     % INNER LOOP trajectory tracking error norm
     der.inner_loop.tracking_error_norm(ii,1) = norm(der.inner_loop.tracking_error(ii));
 
-    % OUTER LOOP FUNNEL (e^T M e)
-    der.outer_loop.funnel.eMe(ii,:) = ...
-        der.outer_loop.tracking_error(ii,:) * ...
-        gains.M_funnel_tran * ...
-        der.outer_loop.tracking_error(ii,:)';
-
-    der.outer_loop.e_tran_dot_vector(ii,:) = ...
-        [log.outer_loop.e_tran_dot.x(ii);
-         log.outer_loop.e_tran_dot.y(ii);
-         log.outer_loop.e_tran_dot.z(ii);
-         log.outer_loop.e_tran_dot.vx(ii);
-         log.outer_loop.e_tran_dot.vy(ii);
-         log.outer_loop.e_tran_dot.vz(ii)];
-
-    % OUTER LOOP trajectory tracking error derivative norm
-    der.outer_loop.e_tran_dot_norm(ii,1) = norm(der.outer_loop.e_tran_dot_vector(ii));
-
 end
+
 
 end
 

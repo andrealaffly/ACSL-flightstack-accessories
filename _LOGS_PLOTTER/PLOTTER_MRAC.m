@@ -14,7 +14,7 @@ addpath(genpath('.\plot_functions'));
 
 % ==============================================================================
 % Define the folder name 
-pp.folder_name = '20240729';  
+pp.folder_name = '20251001';  
 
 % Define the controller folder name
 pp.folder_controller = 'MRAC';
@@ -24,7 +24,7 @@ pp.workspace_filename = 'workspace_log_20240729_163324.mat';
 
 % Set flag to true to automatically load the most recent workspace
 % contained in pp.folder_name
-pp.auto_load_last_workspace = false;
+pp.auto_load_last_workspace = true;
 % ==============================================================================
 
 % Load the workspace

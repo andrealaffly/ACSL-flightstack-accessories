@@ -47,11 +47,11 @@ function der = computeDerivedValues(log, vp)
 
     % Average algorithm execution time
     der.average_algorithm_execution_time_us = ...
-        mean(log.algorithm_execution_time_us(log.algorithm_execution_time_us > 0));
+        mean(log.algorithm_execution_time_us(log.algorithm_execution_time_us > 1));
 
     % Standard deviation of algorithm execution time
     der.standard_deviation_algorithm_execution_time_us = ...
-        std(log.algorithm_execution_time_us(log.algorithm_execution_time_us > 0));
+        std(log.algorithm_execution_time_us(log.algorithm_execution_time_us > 1));
 
     % User-defined yaw angle Wrapping
     der.user_defined_yaw = wrapAngleToMinusPiAndPi(log.user_defined_yaw);
@@ -68,6 +68,13 @@ function der = computeDerivedValues(log, vp)
     der.outer_loop.Derivative.x = log.outer_loop.Derivative.x * vp.mass;
     der.outer_loop.Derivative.y = log.outer_loop.Derivative.y * vp.mass;
     der.outer_loop.Derivative.z = log.outer_loop.Derivative.z * vp.mass;
+
+    if isfield(log.outer_loop, 'Derivative_filtered')
+        der.outer_loop.Derivative_filtered.x = log.outer_loop.Derivative_filtered.x * vp.mass;
+        der.outer_loop.Derivative_filtered.y = log.outer_loop.Derivative_filtered.y * vp.mass;
+        der.outer_loop.Derivative_filtered.z = log.outer_loop.Derivative_filtered.z * vp.mass;
+    end
+
 
     % Inner loop - multiplying by inertia matrix to obtain values in [Nm]
     internal.inner_loop.Proportional.raw = [log.inner_loop.Proportional.x';

@@ -162,6 +162,17 @@ function [der, controller_matrices] = computeDerivedValues_MRAC(der, log, vp, ga
 
         der.outer_loop.tracking_error_norm(ii,1) = norm(tracking_error_translational);
 
+        % OUTER LOOP tracking error wrt User-Defined Trajectory
+        tracking_error_userdeftraj_translational = ...
+            [log.position.x(ii) - log.user_defined_position.x(ii);
+             log.position.y(ii) - log.user_defined_position.y(ii);
+             log.position.z(ii) - log.user_defined_position.z(ii);
+             log.velocity.x(ii) - log.user_defined_velocity.x(ii);
+             log.velocity.y(ii) - log.user_defined_velocity.y(ii);
+             log.velocity.z(ii) - log.user_defined_velocity.z(ii)];
+
+        der.outer_loop.tracking_error_userdeftraj_norm(ii,1) = norm(tracking_error_userdeftraj_translational);
+
         % OUTER LOOP K_hat_x_dot
         K_hat_x_dot_outer_loop = adaptiveLawDeadzoneEmodification( ...
           -gains.ADAPTIVE.Gamma_x_translational, ...

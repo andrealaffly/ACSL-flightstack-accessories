@@ -1,6 +1,7 @@
 clear
 close all
 clc
+%%
 
 
 
@@ -16,17 +17,17 @@ addpath(genpath('.\plot_functions'));
 
 % ==============================================================================
 % Define the folder name 
-pp.folder_name = '20241015';  
+pp.folder_name = '20251020';  
 
 % Define the controller folder name
 pp.folder_controller = 'TwoLayerMRAC';
 
 % Define the workspace filename
-pp.workspace_filename = 'workspace_log_20241015_182107.mat';
+pp.workspace_filename = 'workspace_log_20251001_202654.mat';
 
 % Set flag to true to automatically load the most recent workspace
 % contained in pp.folder_name
-pp.auto_load_last_workspace = false;
+pp.auto_load_last_workspace = true;
 % ==============================================================================
 
 % % Interactive dialog to select the workspace

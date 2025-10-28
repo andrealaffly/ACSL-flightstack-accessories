@@ -1,4 +1,4 @@
-function interactivePlotOUTLfunnel(log, der, pp)
+function interactivePlotOUTLfunnel(log, der, pp, gains)
     % Interactive Outer Loop Funnel plot with checkboxes and LaTeX labels
 
     % Create uifigure with white background and fixed size
@@ -35,46 +35,50 @@ function interactivePlotOUTLfunnel(log, der, pp)
     cbLayout.BackgroundColor = [1 1 1];
     cbLayout.Padding = [0 0 0 0];  % Remove any internal padding
 
-
     % Define plot colors
     colors = struct( ...
-        'xi',           [0.8500, 0.3250, 0.0980], ...
-        'eta',          [0, 0.4470, 0.7410], ...
-        'eta_dot',      [0, 0, 1], ...
-        'Ve_function',  [1, 0, 0], ...
-        'lambda_sat',   [0, 1, 0], ...
-        'sigma_nom',    [0.9290, 0.6940, 0.1250], ...
-        'sigma_ideal',  [0.6350, 0.0780, 0.1840], ...
-        'H_function',   [0, 0, 0], ...
-        'diameter',     [0.2, 0.7, 0.7], ...
-        'eMe',          [0.8, 0.5, 0.9] ...
+        'xi',            [0.8500, 0.3250, 0.0980], ...
+        'eta',           [0, 0.4470, 0.7410], ...
+        'eta_dot',       [0, 0, 1], ...
+        'Ve_function',   [1, 0, 0], ...
+        'lambda_sat',    [0, 1, 0], ...
+        'sigma_nom',     [0.9290, 0.6940, 0.1250], ...
+        'sigma_ideal',   [0.6350, 0.0780, 0.1840], ...
+        'H_function',    [0, 0, 0], ...
+        'diameter_log',  [0.2, 0.7, 0.7], ...
+        'diameter_der',  [0.2, 0.4, 0.9], ...
+        'eMe_log',       [0.8, 0.5, 0.9], ...
+        'eMe_der',       [0.6, 0.3, 0.8] ...
     );
-
-    % Signals: {field, label, linestyle, source}
+    
+    % Signals: {key, label, linestyle, source struct, field inside source}
     signals = {
-        'xi',           '$\xi(t)$',               '--', log.outer_loop.funnel;
-        'eta',          '$\eta(t)$',              '--', log.outer_loop.funnel;
-        'eta_dot',      '$\dot{\eta}(t)$',        ':',  log.outer_loop.funnel;
-        'Ve_function',  '$V_e(t,e)$',             '--', log.outer_loop.funnel;
-        'lambda_sat',   '$\lambda_{\rm sat}(t,e)$','--',log.outer_loop.funnel;
-        'sigma_nom',    '$\sigma_{\rm nom}(t,e)$',':',  log.outer_loop.funnel;
-        'sigma_ideal',  '$\sigma_{\rm ideal}(t)$','--', log.outer_loop.funnel;
-        'H_function',   '$H(t,e)$',               ':',  log.outer_loop.funnel;
-        'diameter',     'Funnel Diameter',        ':',  der.outer_loop.funnel;
-        'eMe',          '$e^{\rm T}Me$',          '--', der.outer_loop.funnel;
+        'xi',            '$\xi(t)$',                '--', log.outer_loop.funnel, 'xi';
+        'eta',           '$\eta(t)$',               '--', log.outer_loop.funnel, 'eta';
+        'eta_dot',       '$\dot{\eta}(t)$',         ':',  log.outer_loop.funnel, 'eta_dot';
+        'Ve_function',   '$V_e(t,e)$',              '--', log.outer_loop.funnel, 'Ve_function';
+        'lambda_sat',    '$\lambda_{\rm sat}(t,e)$','--', log.outer_loop.funnel, 'lambda_sat';
+        'sigma_nom',     '$\sigma_{\rm nom}(t,e)$', ':',  log.outer_loop.funnel, 'sigma_nom';
+        'sigma_ideal',   '$\sigma_{\rm ideal}(t)$', '--', log.outer_loop.funnel, 'sigma_ideal';
+        'H_function',    '$H(t,e)$',                ':',  log.outer_loop.funnel, 'H_function';
+        'diameter_log',  'Funnel Diameter',         ':',  log.outer_loop.funnel, 'diameter';
+        'diameter_der',  'Funnel Diameter',         ':',  der.outer_loop.funnel, 'diameter';
+        'eMe_log',       '$e^{\rm T}Me$',           '--', log.outer_loop.funnel, 'eT_M_e';
+        'eMe_der',       '$e^{\rm T}Me$',           '--', der.outer_loop.funnel, 'eMe';
     };
 
     handles = struct();
     rowCount = 0;
 
     for i = 1:size(signals, 1)
-        key = signals{i, 1};
-        label = signals{i, 2};
-        style = signals{i, 3};
-        source = signals{i, 4};
+        key     = signals{i,1};
+        label   = signals{i,2};
+        style   = signals{i,3};
+        source  = signals{i,4};
+        subkey  = signals{i,5};
 
-        if isfield(source, key)
-            h = plot(ax, log.time, source.(key), ...
+        if isfield(source, subkey)
+            h = plot(ax, log.time, source.(subkey), ...
                 'LineStyle', style, ...
                 'Color', colors.(key), ...
                 'DisplayName', label, ...
@@ -104,30 +108,39 @@ function interactivePlotOUTLfunnel(log, der, pp)
         end
     end
 
-    % Plot e_min if available
-    if isfield(der.outer_loop.funnel, 'e_min')
-        h = yline(ax, der.outer_loop.funnel.e_min, '-.', 'Color', [0.3, 0.3, 0.3], ...
-            'LineWidth', 2.0, 'DisplayName', '$e_{\min}$');
-        handles.e_min = h;
+    % Plot e_min if available (supports both legacy and nested formats)
+if (isfield(gains, 'e_min_funnel_tran') || ...
+   (isfield(gains, 'ADAPTIVE') && isfield(gains.ADAPTIVE, 'e_min_funnel_translational')))
 
-        row = uigridlayout(cbLayout, [1, 2]);
-        row.BackgroundColor = [1 1 1];
-        row.ColumnWidth = {22, '1x'};
-        row.Layout.Row = rowCount + 1;
-
-        cb = uicheckbox(row, ...
-            'Value', true, ...
-            'Tag', 'e_min');
-
-        lbl = uilabel(row, ...
-            'Text', '$e_{\min}$', ...
-            'Interpreter', 'latex', ...
-            'FontSize', 12);
-        lbl.HorizontalAlignment = 'left';  % Ensure left alignment
-        lbl.VerticalAlignment = 'center'; % Center vertically with checkbox
-
-        cb.ValueChangedFcn = @(src, ~) set(handles.(src.Tag), 'Visible', logicalToOnOff(src.Value));
+    % Get value based on structure
+    if isfield(gains, 'e_min_funnel_tran')
+        e_min_val = gains.e_min_funnel_tran;
+    else
+        e_min_val = gains.ADAPTIVE.e_min_funnel_translational;
     end
+
+    h = yline(ax, e_min_val, '-.', 'Color', [0.3, 0.3, 0.3], ...
+        'LineWidth', 2.0, 'DisplayName', '$e_{\min}$');
+    handles.e_min = h;
+
+    row = uigridlayout(cbLayout, [1, 2]);
+    row.BackgroundColor = [1 1 1];
+    row.ColumnWidth = {22, '1x'};
+    row.Layout.Row = rowCount + 1;
+
+    cb = uicheckbox(row, ...
+        'Value', true, ...
+        'Tag', 'e_min');
+
+    lbl = uilabel(row, ...
+        'Text', '$e_{\min}$', ...
+        'Interpreter', 'latex', ...
+        'FontSize', 12);
+    lbl.HorizontalAlignment = 'left';
+    lbl.VerticalAlignment = 'center';
+
+    cb.ValueChangedFcn = @(src, ~) set(handles.(src.Tag), 'Visible', logicalToOnOff(src.Value));
+end
 
     % Set x-axis limits
     xlim(ax, [pp.x_lim_min, pp.x_lim_max]);

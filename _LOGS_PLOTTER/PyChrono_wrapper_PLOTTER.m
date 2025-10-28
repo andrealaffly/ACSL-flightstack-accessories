@@ -57,5 +57,5 @@ for i = 1:length(workspaces)
 
     % Your plotting or analysis function here
     % Example:
-    plotPosition(log, der, pp);
+    % plotPosition(log, der, pp);
 end

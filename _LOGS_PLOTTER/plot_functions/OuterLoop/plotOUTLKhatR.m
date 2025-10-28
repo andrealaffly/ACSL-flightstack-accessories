@@ -15,15 +15,27 @@ plot(log.time,log.outer_loop.K_hat_r.ind02,'-.','LineWidth',1.2)
 plot(log.time,log.outer_loop.K_hat_r.ind12,'-.','LineWidth',1.2)
 plot(log.time,log.outer_loop.K_hat_r.ind22,'-.','LineWidth',1.2)
 
+% Determine outer_bound and inner_bound based on available gain structure
+if isfield(gains, 'ADAPTIVE')
+    S_diag = gains.ADAPTIVE.S_diagonal_r_translational;
+    alpha = gains.ADAPTIVE.alpha_r_translational;
+elseif isfield(gains, 'S_diagonal_r_tran')
+    S_diag = gains.S_diagonal_r_tran;
+    alpha = gains.alpha_r_tran;
+else
+    error('Unknown gain structure: Cannot find S_diagonal_r_translational or S_diagonal_r_tran.');
+end
+
 % Check if all elements in the ellipsoid vector are the same
-if all(gains.ADAPTIVE.S_diagonal_r_translational == gains.ADAPTIVE.S_diagonal_r_translational(1))
-    outer_bound = gains.ADAPTIVE.S_diagonal_r_translational(1); % Use the scalar value
+if all(S_diag == S_diag(1))
+    outer_bound = S_diag(1); % Use the scalar value
 else
     error('Values in the Projection operator ellipsoid vector are not the same!');
 end
 
 % Compute inner bound
-inner_bound = outer_bound * gains.ADAPTIVE.alpha_r_translational;
+inner_bound = outer_bound * alpha;
+
 
 % Add horizontal lines for inner and outer bounds
 yline(outer_bound, 'r-', 'LineWidth', 2.0);    % Outer bound positive
