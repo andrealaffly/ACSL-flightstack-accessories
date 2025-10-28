@@ -3,7 +3,7 @@
 ## **Trajectory Following Tests (Nominal Conditions)**
 
 <p align="center">
-  <img src="/Images/X8_nominal.png" alt="X8-Copter during nominal test flight" width="75%">
+  <img src="/Images/X8_nominal.png" alt="X8-Copter during nominal test flight" width="40%">
 </p>
 <p align="center">
   <em>Figure: X8-Copter in nominal condition for performing trajectory tracking tests.</em>
