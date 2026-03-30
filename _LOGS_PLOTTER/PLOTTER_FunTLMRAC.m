@@ -141,6 +141,9 @@ plotOUTLThetaHat(log, der, pp, gains);
 %% Plot OUTER LOOP Adaptive Gain K_hat_g TWO-LAYER
 plotOUTLKhatG(log, der, pp, gains);
 
+%% Plot OUTER LOOP Adaptive Gains Frobenius Norm
+plotOUTLAdaptiveGainsNorm(log, der, pp)
+
 %% Plot INNER LOOP Adaptive Gain K_hat_x
 plotINNLKhatX(log, der, pp, gains);
 

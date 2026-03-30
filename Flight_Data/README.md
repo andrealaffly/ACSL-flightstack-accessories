@@ -13,6 +13,7 @@
 | 2025-10-13 | FunnelTwoLayerMRAC | MoCap | Off-Nominal | Sling payload | X8-Copter | [GitHub](./2025/10/20251013/FunnelTwoLayerMRAC/README.md) | N/A |
 | 2025-10-20 | TwoLayerMRAC | MoCap | Nominal | N/A | X8-Copter | [GitHub](./2025/10/20251020/TwoLayerMRAC/README.md) | N/A |
 | 2025-10-20 | FunnelTwoLayerMRAC | MoCap | Nominal | N/A | X8-Copter | [GitHub](./2025/10/20251020/FunnelTwoLayerMRAC/README.md) | N/A |
+| 2026-03-25 | HybridTwoLayerMRAC | MoCap | Nominal | N/A | X8-Copter | [GitHub](./2026/03/20260325/HybridTwoLayerMRAC/README.md) | N/A |
 
 ---
 

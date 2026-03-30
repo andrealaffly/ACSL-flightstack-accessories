@@ -17,6 +17,17 @@ for ii = 1:length(log.time)
     % OUTER LOOP trajectory tracking error norm
     der.outer_loop.tracking_error_norm(ii,1) = norm(der.outer_loop.tracking_error(ii));
 
+    % OUTER LOOP tracking error wrt User-Defined Trajectory
+    tracking_error_userdeftraj_translational = ...
+        [log.position.x(ii) - log.user_defined_position.x(ii);
+         log.position.y(ii) - log.user_defined_position.y(ii);
+         log.position.z(ii) - log.user_defined_position.z(ii);
+         log.velocity.x(ii) - log.user_defined_velocity.x(ii);
+         log.velocity.y(ii) - log.user_defined_velocity.y(ii);
+         log.velocity.z(ii) - log.user_defined_velocity.z(ii)];
+
+    der.outer_loop.tracking_error_userdeftraj_norm(ii,1) = norm(tracking_error_userdeftraj_translational);
+
     % INNER LOOP trajectory tracking error
     der.inner_loop.tracking_error(ii,:) = ...
         [log.angular_velocity.x(ii) - log.inner_loop.reference_model.angular_velocity.x(ii);
@@ -48,6 +59,10 @@ end
     % OUTER LOOP L2 norm
     der.outer_loop.tracking_error_L2norm = ...
       computeL2norm(log.time, der.outer_loop.tracking_error_norm, 0);
+
+    % OUTER LOOP L2 norm wrt User-Defined Trajectory
+    der.outer_loop.tracking_error_userdeftraj_L2norm = ...
+      computeL2norm(log.time, der.outer_loop.tracking_error_userdeftraj_norm, 0);
 
 end
 

@@ -1,0 +1,9 @@
+{
+  "branch": "dev-hybrid",
+  "commit_hash": "83ad7d97b644bd9ae2807c647aa1c567bf118a46",
+  "commit_tag": "",
+  "commit_url": "https://github.com/mattia-gramuglia/flightstack/tree/83ad7d97b644bd9ae2807c647aa1c567bf118a46",
+  "dirty": 1,
+  "remote_url": "https://github.com/mattia-gramuglia/flightstack",
+  "repo_path": "/home/odroid/ws_flightstack/src/flightstack"
+}

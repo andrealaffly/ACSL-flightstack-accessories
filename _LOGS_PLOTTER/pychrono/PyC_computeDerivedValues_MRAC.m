@@ -39,5 +39,9 @@ end
     der.outer_loop.tracking_error_L2norm = ...
       computeL2norm(log.time, der.outer_loop.tracking_error_norm, 0);
 
+    % OUTER LOOP L2 norm wrt User-Defined Trajectory
+    der.outer_loop.tracking_error_userdeftraj_L2norm = ...
+      computeL2norm(log.time, der.outer_loop.tracking_error_userdeftraj_norm, 0);
+
 end
 
