@@ -16,13 +16,13 @@ addpath(genpath('.\plot_functions'));
 
 % ==============================================================================
 % Define the folder name 
-pp.folder_name = '20251013';  
+pp.folder_name = '20260325';  
 
 % Define the controller folder name
-pp.folder_controller = 'FunnelTwoLayerMRAC'; % FunnelTwoLayerMRAC
+pp.folder_controller = 'HybridTwoLayerMRAC'; % HybridTwoLayerMRAC
 
 % Define the workspace filename
-pp.workspace_filename = 'workspace_log_20251013_190241.mat';
+pp.workspace_filename = 'workspace_log_20260325_192810.mat';
 
 % Set flag to true to automatically load the most recent workspace
 % contained in pp.folder_name
@@ -40,9 +40,9 @@ pp.font_size = 20;
 pp.font_size_title = 22;
 
 % pp.x_lim_min = 0;
-% pp.x_lim_max = 41.6;
+pp.x_lim_max = 45;
 pp.x_lim_min = 10;
-pp.x_lim_max = log.time(end);
+% pp.x_lim_max = log.time(end);
  
 
 %% Plot thrust vs time QUADCOPTER
@@ -57,8 +57,17 @@ plotPosition(log, der, pp);
 %% Plot velocity vs time
 plotVelocity(log, der, pp);
 
+%% Plot position and velocity error norm
+plotOUTLposVelErrorNorms(log, der, pp);
+
+%% Plot position and velocity error L2-norm
+plotOUTLposVelErrorL2Norms(log, der, pp);
+
 %% Plot Euler angles vs time
 plotEulerAnglesSafeMech(log, der, pp);
+
+%% Plot Euler angles errors
+plotINNLEulerAnglesErrors(log, der, pp);
 
 %% Plot angles derivatives vs time
 plotAngularRates(log, der, pp);
@@ -183,50 +192,23 @@ plotINNLuAdaptiveKhatG(log, der, pp);
 %% Plot OUTER LOOP norm of tracking error
 plotOUTLnormTrackingError(log, der, pp);
 
+%% Plot OUTER LOOP norm of tracking error wrt User-Defined Trajectory
+plotOUTLnormTrackingErrorUserDefTraj(log, der, pp);
+
 %% Plot INNER LOOP norm of tracking error
 plotINNLnormTrackingError(log, der, pp);
 
 %% Plot OUTER LOOP L2-norm of tracking error
 plotOUTLnormL2TrackingError(log, der, pp);
 
-%% Plot OUTER LOOP Adaptive Gain derivative K_hat_x_dot
-plotOUTLKhatXdot(log, der, pp);
-
-%% Plot OUTER LOOP Adaptive Gain derivative K_hat_r_dot
-plotOUTLKhatRdot(log, der, pp);
-
-%% Plot OUTER LOOP Adaptive Gain derivative Theta_hat_dot
-plotOUTLThetaHatdot(log, der, pp);
-
-%% Plot OUTER LOOP Adaptive Gain derivative K_hat_g_dot TWO-LAYER
-plotOUTLKhatGdot(log, der, pp);
-
-%% Plot INNER LOOP Adaptive Gain derivative K_hat_x_dot
-plotINNLKhatXdot(log, der, pp);
-
-%% Plot INNER LOOP Adaptive Gain derivative K_hat_r_dot
-plotINNLKhatRdot(log, der, pp);
-
-%% Plot INNER LOOP Adaptive Gain derivative Theta_hat_dot
-plotINNLThetaHatdot(log, der, pp);
-
-%% Plot INNER LOOP Adaptive Gain derivative K_hat_g_dot TWO-LAYER
-plotINNLKhatGdot(log, der, pp);
+%% Plot OUTER LOOP L2-norm of tracking error wrt User-Defined Trajectory
+plotOUTLnormL2TrackingErrorUserDefTraj(log, der, pp);
 
 %% Plot OUTER LOOP dead zone modification value
 plotOUTLdeadZoneModValue(log, der, pp);
 
 %% Plot INNER LOOP dead zone modification value
 plotINNLdeadZoneModValue(log, der, pp);
-
-%% Plot OUTER LOOP FUNNEL xi function
-plotOUTLfunnelXiFunction(log, der, pp);
-
-%% Plot OUTER LOOP FUNNEL variables
-plotOUTLfunnel(log, der, pp, gains);
-
-%% Interactive Plot OUTER LOOP FUNNEL variables
-interactivePlotOUTLfunnel(log, der, pp, gains);
 
 
 %% MOCAP

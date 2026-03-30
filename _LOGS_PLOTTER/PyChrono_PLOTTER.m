@@ -2,37 +2,61 @@ clear
 close all
 clc
 
-%%
+%% =========================================================================
+% CONFIGURATION: choose how to load the workspace
+use_manual_selection = false;   % <--- SET THIS TO false TO USE THE LEGACY METHOD
+% =========================================================================
 
-% Define global propertries
-
-% Set overall properties for plots and figures
+% Global plotting properties
 set(groot, 'defaultAxesTickLabelInterpreter','latex');
 set(groot, 'defaultLegendInterpreter','latex');
 set(groot, 'defaultAxesFontSize', 20);
 
-% Generate a path string including all subdirectories of plot_functions
+% Add paths
 addpath(genpath('.\plot_functions'));
 addpath(genpath('.\functions'));
 addpath(genpath('.\pychrono'));
 
-% ==============================================================================
-% Define the folder name 
-pp.folder_name = '20251211';  
+% =========================================================================
+% WORKSPACE LOADING
+% =========================================================================
 
-% Define the controller folder name
-pp.folder_controller = 'MRAC';
+if use_manual_selection
+    % -------------------------------------------------------------
+    % MANUAL SELECTION MODE
+    % -------------------------------------------------------------
+    start_path = fullfile(pwd, '..', 'pychrono', 'wrapper');
+    [sel_file, sel_path] = uigetfile(fullfile(start_path, '**', '*.mat'), ...
+        'Select a workspace file');
 
-% Define the workspace filename
-pp.workspace_filename = 'workspace_log_20251211_114054.mat';
+    if sel_file == 0
+        error('No workspace selected. Set use_manual_selection = false to use pp.* loading.');
+    end
 
-% Set flag to true to automatically load the most recent workspace
-% contained in pp.folder_name
-pp.auto_load_last_workspace = false;
-% ==============================================================================
+    fullpath = fullfile(sel_path, sel_file);
+    fprintf("Loading manually selected workspace:\n   %s\n\n", fullpath);
 
-% Load the workspace
-pp = PyC_loadWorkspace(pp);
+    tmp = load(fullpath);
+    log     = tmp.log;
+    gains   = tmp.gains;
+    sim_cfg = tmp.sim_cfg;
+
+    pp.folder_controller = string(sim_cfg.mission_config.controller_type);
+
+else
+    % -------------------------------------------------------------
+    % LEGACY MODE (original folder + filename fields)
+    % -------------------------------------------------------------
+    pp.folder_name = '20260210';
+    pp.folder_controller = 'FunnelTwoLayerMRAC';
+    pp.workspace_filename = 'workspace_log_20260210_194602.mat';
+    pp.auto_load_last_workspace = false;
+
+    pp = PyC_loadWorkspace(pp);
+
+    % log, gains, sim_cfg are loaded by PyC_loadWorkspace
+end
+
 
 % Plot properties
 pp.font_size = 20;
@@ -53,7 +77,8 @@ elseif (pp.folder_controller == "MRAC") || ...
        (pp.folder_controller == "HybridMRAC") || ...
        (pp.folder_controller == "HybridTwoLayerMRAC")
     der = PyC_computeDerivedValues_MRAC(log, der);
-elseif (pp.folder_controller == "FunnelMRAC")
+elseif (pp.folder_controller == "FunnelMRAC") || ...
+       (pp.folder_controller == "FunnelTwoLayerMRAC")
     der = PyC_computeDerivedValues_FunMRAC(log, der, gains);
 end
 
@@ -67,8 +92,17 @@ plotPosition(log, der, pp);
 %% Plot velocity vs time
 plotVelocity(log, der, pp);
 
+%% Plot position and velocity error norm
+plotOUTLposVelErrorNorms(log, der, pp);
+
+%% Plot position and velocity error L2-norm
+plotOUTLposVelErrorL2Norms(log, der, pp);
+
 %% Plot Euler angles vs time
 plotEulerAngles(log, der, pp);
+
+%% Plot Euler angles errors
+plotINNLEulerAnglesErrors(log, der, pp);
 
 %% Plot angles derivatives vs time
 plotAngularRates(log, der, pp);
@@ -130,6 +164,9 @@ plotOUTLnormL2TrackingError(log, der, pp);
 %% Plot OUTER LOOP norm of tracking error wrt User-Defined Trajectory
 plotOUTLnormTrackingErrorUserDefTraj(log, der, pp);
 
+%% Plot OUTER LOOP L2-norm of tracking error wrt User-Defined Trajectory
+plotOUTLnormL2TrackingErrorUserDefTraj(log, der, pp);
+
 %% Plot OUTER LOOP FUNNEL variables
 plotOUTLfunnel(log, der, pp, gains);
 
@@ -138,3 +175,11 @@ plotOUTLfunnelXiFunction(log, der, pp);
 
 %% Interactive Plot OUTER LOOP FUNNEL variables
 interactivePlotOUTLfunnel(log, der, pp, gains);
+
+
+%% POSTPROCESS ============================================================
+% =========================================================================
+
+plot_single_sided_fft(der.total_thrust_motors_N, 100, pp);
+plot_psd_total_thrust(der.total_thrust_motors_N, 100, pp);
+% band_limited_energy_plot(der.total_thrust_motors_N, 100, pp);

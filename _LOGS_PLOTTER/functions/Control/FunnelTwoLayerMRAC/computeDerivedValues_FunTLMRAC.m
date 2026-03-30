@@ -32,6 +32,8 @@ function der = computeDerivedValues_FunTLMRAC(der, log, vp, gains)
                               log.outer_loop.K_hat_x.ind30(ii) log.outer_loop.K_hat_x.ind31(ii) log.outer_loop.K_hat_x.ind32(ii);
                               log.outer_loop.K_hat_x.ind40(ii) log.outer_loop.K_hat_x.ind41(ii) log.outer_loop.K_hat_x.ind42(ii);
                               log.outer_loop.K_hat_x.ind50(ii) log.outer_loop.K_hat_x.ind51(ii) log.outer_loop.K_hat_x.ind52(ii)];
+        % OUTER LOOP K_hat_x Frobenius norm
+        der.outer_loop.K_hat_x_norm(ii,1) = norm(K_hat_x_outer_loop,'fro');
 
         x_outer_loop = [log.outer_loop.reference_model.position.x(ii);
                         log.outer_loop.reference_model.position.y(ii);
@@ -50,6 +52,8 @@ function der = computeDerivedValues_FunTLMRAC(der, log, vp, gains)
         K_hat_r_outer_loop = [log.outer_loop.K_hat_r.ind00(ii) log.outer_loop.K_hat_r.ind01(ii) log.outer_loop.K_hat_r.ind02(ii);
                               log.outer_loop.K_hat_r.ind10(ii) log.outer_loop.K_hat_r.ind11(ii) log.outer_loop.K_hat_r.ind12(ii);
                               log.outer_loop.K_hat_r.ind20(ii) log.outer_loop.K_hat_r.ind21(ii) log.outer_loop.K_hat_r.ind22(ii)];
+        % OUTER LOOP K_hat_r Frobenius norm
+        der.outer_loop.K_hat_r_norm(ii,1) = norm(K_hat_r_outer_loop,'fro');
 
         r_cmd_outer_loop = [log.outer_loop.r_cmd.x(ii);
                             log.outer_loop.r_cmd.y(ii);
@@ -68,6 +72,8 @@ function der = computeDerivedValues_FunTLMRAC(der, log, vp, gains)
                                 log.outer_loop.Theta_hat.ind30(ii) log.outer_loop.Theta_hat.ind31(ii) log.outer_loop.Theta_hat.ind32(ii);
                                 log.outer_loop.Theta_hat.ind40(ii) log.outer_loop.Theta_hat.ind41(ii) log.outer_loop.Theta_hat.ind42(ii);
                                 log.outer_loop.Theta_hat.ind50(ii) log.outer_loop.Theta_hat.ind51(ii) log.outer_loop.Theta_hat.ind52(ii)];
+        % OUTER LOOP Theta_hat Frobenius norm
+        der.outer_loop.Theta_hat_norm(ii,1) = norm(Theta_hat_outer_loop,'fro');
 
         rotation_matrix_321_global_to_local = ...
           rotationMatrix321GlobalToLocal(log.euler_angles.roll(ii), ...
@@ -100,6 +106,8 @@ function der = computeDerivedValues_FunTLMRAC(der, log, vp, gains)
                               log.outer_loop.K_hat_g.ind30(ii) log.outer_loop.K_hat_g.ind31(ii) log.outer_loop.K_hat_g.ind32(ii);
                               log.outer_loop.K_hat_g.ind40(ii) log.outer_loop.K_hat_g.ind41(ii) log.outer_loop.K_hat_g.ind42(ii);
                               log.outer_loop.K_hat_g.ind50(ii) log.outer_loop.K_hat_g.ind51(ii) log.outer_loop.K_hat_g.ind52(ii)];
+        % OUTER LOOP K_hat_g Frobenius norm
+        der.outer_loop.K_hat_g_norm(ii,1) = norm(K_hat_g_outer_loop,'fro');
 
         tracking_error_translational = ...
             [log.position.x(ii) - log.outer_loop.reference_model.position.x(ii);

@@ -17,13 +17,13 @@ addpath(genpath('.\plot_functions'));
 
 % ==============================================================================
 % Define the folder name 
-pp.folder_name = '20251020';  
+pp.folder_name = '20260225';  
 
 % Define the controller folder name
 pp.folder_controller = 'TwoLayerMRAC';
 
 % Define the workspace filename
-pp.workspace_filename = 'workspace_log_20251001_202654.mat';
+pp.workspace_filename = 'workspace_log_20251020_151516.mat';
 
 % Set flag to true to automatically load the most recent workspace
 % contained in pp.folder_name
@@ -140,6 +140,9 @@ plotOUTLThetaHat(log, der, pp, gains);
 
 %% Plot OUTER LOOP Adaptive Gain K_hat_g TWO-LAYER
 plotOUTLKhatG(log, der, pp, gains);
+
+%% Plot OUTER LOOP Adaptive Gains Frobenius Norm
+plotOUTLAdaptiveGainsNorm(log, der, pp)
 
 %% Plot INNER LOOP Adaptive Gain K_hat_x
 plotINNLKhatX(log, der, pp, gains);
