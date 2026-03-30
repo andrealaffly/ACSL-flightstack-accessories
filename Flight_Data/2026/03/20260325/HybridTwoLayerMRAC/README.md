@@ -3,6 +3,13 @@
 ## **Trajectory Following Tests (Nominal Conditions)**
 
 <p align="center">
+  <img src="/Images/Gifs/20260325_192810.gif" alt="20260325_192810 flight" width="60%">
+</p>
+<p align="center">
+  <em>Figure: 20260325_192810 flight. Hybrid Error Bounding Control Input Two-Layer MRAC controller.</em>
+</p>
+
+<p align="center">
   <img src="/Images/X8_nominal.png" alt="X8-Copter during nominal test flight" width="40%">
 </p>
 <p align="center">
