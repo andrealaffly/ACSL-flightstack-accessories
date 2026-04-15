@@ -8,6 +8,7 @@
 | 2024-07-20 | MRAC | MoCap | Nominal | MRAC performance evaluation | X8-Copter | [GitHub](./2024/07/20240720/MRAC/README.md) | N/A |
 | 2024-07-29 | PID | MoCap | Off-Nominal | Box + steel ball | X8-Copter | [GitHub](./2024/07/20240729/MRAC/README.md) | N/A |
 | 2024-07-29 | MRAC | MoCap | Off-Nominal | Box + steel ball | X8-Copter | [GitHub](./2024/07/20240729/MRAC/README.md) | N/A |
+| 2025-01-13 | FunnelTwoLayerMRAC | MoCap | Nominal + Off-Nominal | Box + steel balls | X8-Copter | [GitHub](./2025/01/20250113/FunnelTwoLayerMRAC/README.md) | N/A |
 | 2025-10-01 | FunnelTwoLayerMRAC | MoCap | Off-Nominal | Sling payload | X8-Copter | [GitHub](./2025/10/20251001/FunnelTwoLayerMRAC/README.md) | N/A |
 | 2025-10-13 | TwoLayerMRAC | MoCap | Off-Nominal | Sling payload | X8-Copter | [GitHub](./2025/10/20251013/TwoLayerMRAC/README.md) | N/A |
 | 2025-10-13 | FunnelTwoLayerMRAC | MoCap | Off-Nominal | Sling payload | X8-Copter | [GitHub](./2025/10/20251013/FunnelTwoLayerMRAC/README.md) | N/A |
