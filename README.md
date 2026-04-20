@@ -10,11 +10,8 @@ This folder contains MATLAB scripts for importing and plotting log data.
 - **`createWorkspace.m`**  
   This script imports log files and creates a workspace in the MATLAB environment for processing. It serves as the entry point for working with flight data logs.
 
-- **`PLOTTER_PID.m`**  
-  A sample script that provides an example of plotting PID controller-related log data stored in the MATLAB workspace, using the workspace created by `createWorkspace.m`.
-
-- **`PLOTTER_MRAC.m`**  
-  A sample script that shows how to plot log data related to Model Reference Adaptive Control (MRAC) experiments, using the workspace created by `createWorkspace.m`.
+- **`Flightstack_PLOTTER.m`**  
+  A sample script that shows how to plot log data using the workspace created by `createWorkspace.m`.
 
 ### 2. Flight_Data
 This folder contains example log files from flight tests. These files can be imported into MATLAB using the scripts in the `_LOGS_PLOTTER` folder for visualization and analysis.
